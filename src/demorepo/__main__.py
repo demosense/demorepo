@@ -1,7 +1,7 @@
 import argparse
 
 
-if __name__== '__main__':
+if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='demorepo',
                                      description='Tool to manage a monorepo, where projects can be general projects '
                                                  '(code language, build and test management...).')
