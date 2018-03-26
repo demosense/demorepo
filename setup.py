@@ -10,5 +10,8 @@ setup(name='demorepo',
       author='Javier Cozar',
       author_email='javier.cozar@demosense.com',
       packages=find_packages('src', exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-      package_dir={'': 'src'}
+      package_dir={'': 'src'},
+      package_data={
+            'demorepo': ['commands/scripts/gitlab/*.sh'],
+      }
       )
