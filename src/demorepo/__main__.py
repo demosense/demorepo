@@ -11,14 +11,14 @@ if __name__ == '__main__':
                                                  '(language code, build and test management...).')
 
     subparsers = parser.add_subparsers(title='working mode', description='init, run or integration',
-                                       help='working mode to group commands based on it',
+                                       help='working mode to group commands based on it.',
                                        dest='command')
 
     parser_init = subparsers.add_parser('init',
-                                        description="Select the CI tool and parameters to perform actions on demorepo")
+                                        description="Select the CI tool and parameters to perform actions on demorepo.")
     parser_init.add_argument('--ci-tool', required=True, choices=['gitlab'],
                              help='The specific CI tool (e.g.: gitlab, Circle-CI, ...')
-    parser_init.add_argument('--target', '-t', default='projects', help='Path to the projects folder')
+    parser_init.add_argument('-p', '--path', default='projects', help='Path to the projects folder.')
     parser_init.add_argument('--ci-url', default=None, help='The URL to the CI Server. '
                                                             'By default (None) uses the general public URL.')
     parser_init.add_argument('-r', '--recursive-deps', action='store_true',
@@ -28,7 +28,14 @@ if __name__ == '__main__':
     parser_run = subparsers.add_parser('run',
                                        description='Run the stages for all the projects defined in each demorepo.yml')
     parser_run.add_argument('-s', '--stage', required=True, help='Stage name in the project demorepo.yml')
-    parser_run.add_argument('-e', '--env', help='Optional variable passed to the target stage script')
+    parser_run.add_argument('-e', '--env', help='Optional variable passed to the target stage script.')
+    parser_run.add_argument('-p', '--path', default='projects',
+                            help='Path to the projects folder. If init command was executed before, it will use the '
+                                 'same projects folder path by default.')
+    parser_run.add_argument('-t', '--targets', default='ALL',
+                            help='The target projects to run the stage. Can be ALL, or a list of project names '
+                                 'separated by spaces (use quotes). If init command was executed before, it will use '
+                                 'the computed target projects by default.')
 
 
     parser_integration = subparsers.add_parser('integration')

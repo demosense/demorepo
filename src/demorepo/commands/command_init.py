@@ -1,12 +1,9 @@
-import subprocess
 import os
-import sys
 import glob
 import json
-from . import gitlab
+from . import gitlab, METADATA_PATH
 
 SCRIPTS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts/gitlab')
-METADATA_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'metadata/init.json')
 
 
 def filter_targets(targets, args):
@@ -19,7 +16,7 @@ def filter_targets(targets, args):
     """
     # Remove all the subprojects in modified_subprojects which does not exists:
     return [t for t in targets if os.path.isdir(
-        os.path.join(args['target'], t)) and os.path.exists(os.path.join(args['target'], t, 'demorepo.yml'))]
+        os.path.join(args['path'], t)) and os.path.exists(os.path.join(args['path'], t, 'demorepo.yml'))]
 
 
 def append_dependencies(targets, args):
@@ -31,11 +28,11 @@ def append_dependencies(targets, args):
     :return: The projects which has been modified from last green commit of have modified dependencies
     """
     # Get the all the project paths (which are folders). *Only the names*.
-    all_project_names = [f for f in os.listdir(args['target']) if os.path.isdir(os.path.join(args['target'], f))]
+    all_project_names = [f for f in os.listdir(args['path']) if os.path.isdir(os.path.join(args['path'], f))]
 
     # Just extend the python projects, where a requirements file is inside
     python_project_names = [f for f in all_project_names
-                            if len(glob.glob(os.path.join(args['target'], f, 'requirements*'))) > 0]
+                            if len(glob.glob(os.path.join(args['path'], f, 'requirements*'))) > 0]
 
 
     # Process the dict of dependents (projects which are dependent of a project; inverse of requirements)
@@ -48,7 +45,7 @@ def append_dependencies(targets, args):
         # (requirements refers to other commit code)
         requirements_line = "../" + sub1.strip()  # strip to remove any possible whitespaces or line breaks
         for sub2 in python_project_names:
-            requirements_paths = glob.glob(f"{os.path.join(args['target'], sub2)}/requirements*")
+            requirements_paths = glob.glob(f"{os.path.join(args['path'], sub2)}/requirements*")
             if any(requirements_line == l.strip() for req_path in requirements_paths
                    for l in open(req_path).readlines()):
                 dependents[sub1].append(sub2)
@@ -73,7 +70,7 @@ def append_dependencies(targets, args):
 
 def init(args):
     # Normalize project path (remove the last / if exists)
-    args['target'] = os.path.normpath(args['target'])
+    args['path'] = os.path.normpath(args['path'])
 
     # Depending on the ci_tool option, run the respective function
     if args["ci_tool"] == "gitlab":
@@ -84,12 +81,12 @@ def init(args):
     # this CLI has been executed). If this key already exists, overwrite the metadata.
 
     # First, for the very first time, create the METADATA_PATH dirname folder
-    if not os.path.exists(os.path.dirname(METADATA_PATH)):
-        os.makedirs(os.path.dirname(METADATA_PATH))
+    if not os.path.exists(METADATA_PATH):
+        os.makedirs(METADATA_PATH)
 
     # If the init.json file already exists, load it and update its information.
-    if os.path.exists(METADATA_PATH):
-        with open(METADATA_PATH, 'r') as f:
+    if os.path.exists(os.path.join(METADATA_PATH, 'init.json')):
+        with open(os.path.join(METADATA_PATH, 'init.json'), 'r') as f:
             metadata = json.loads(f.read())
     # Otherwise, we start from an empty init.json object
     else:
@@ -103,7 +100,7 @@ def init(args):
         }
     }
 
-    with open(METADATA_PATH, 'w') as f:
+    with open(os.path.join(METADATA_PATH, 'init.json'), 'w') as f:
         f.write(json.dumps(metadata))
 
 
@@ -111,7 +108,7 @@ def init_gitlab(args):
     # Clone the actual environ (contains required env vars) and append new ones for the child process
     child_environ = os.environ.copy()
     child_environ["CI_SERVER_URL"] = args.get('ci-url') or gitlab.defaults["CI_SERVER_URL"]
-    child_environ["PROJECTS_PATH"] = args['target']
+    child_environ["PROJECTS_PATH"] = args['path']
 
     targets = gitlab.get_target_projects(child_environ)
 

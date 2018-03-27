@@ -1,1 +1,5 @@
-../p3
+test:
+    script: ./test.sh 
+
+deploy: 
+    script: ./deploy.sh $DEMOREPO_ENV

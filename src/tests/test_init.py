@@ -5,11 +5,12 @@ import json
 import os
 from . import MockGitRepo
 
+
 def test_last_green_commit_master(monkeypatch):
     args = {
         'command': 'init',
         'ci_tool': 'gitlab',
-        'target': 'tests/projects',
+        'path': 'tests/projects',
         'recursive_deps': False}
 
     set_all_projects = set()
@@ -29,7 +30,7 @@ def test_last_green_commit_tag(monkeypatch):
     args = {
         'command': 'init',
         'ci_tool': 'gitlab',
-        'target': 'tests/projects',
+        'path': 'tests/projects',
         'recursive_deps': False}
 
     set_all_projects = set()
@@ -50,7 +51,7 @@ def test_last_green_commit_release(monkeypatch):
     args = {
         'command': 'init',
         'ci_tool': 'gitlab',
-        'target': 'tests/projects',
+        'path': 'tests/projects',
         'recursive_deps': False}
 
     set_all_projects = set()
@@ -71,7 +72,7 @@ def test_last_green_commit_develop_recursive(monkeypatch):
     args = {
         'command': 'init',
         'ci_tool': 'gitlab',
-        'target': 'tests/projects',
+        'path': 'tests/projects',
         'recursive_deps': True}
 
     set_projects = set()
@@ -92,9 +93,9 @@ def test_last_green_commit_develop_recursive(monkeypatch):
         return Get()
     monkeypatch.setattr(requests, 'get', mock_get)
     MockGitRepo.DIFFS = [
-        os.path.join(args['target'], 'must_be_filtered_file.txt'),
-        os.path.join(args['target'], 'must_be_filtered_folder'),
-        os.path.join(args['target'], 'p1/demorepo.yml')
+        os.path.join(args['path'], 'must_be_filtered_file.txt'),
+        os.path.join(args['path'], 'must_be_filtered_folder'),
+        os.path.join(args['path'], 'p1/demorepo.yml')
     ]
     monkeypatch.setattr(git, 'Repo', MockGitRepo)
 
