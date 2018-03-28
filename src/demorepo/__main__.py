@@ -1,8 +1,7 @@
 import argparse
-import sys
 import os
 from git import Repo
-import commands
+import demorepo.commands as commands
 
 
 __package__ = "demorepo"
