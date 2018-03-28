@@ -8,6 +8,7 @@ from . import METADATA_PATH
 
 def _run_targets(projects_path, targets, stage, env):
     errors = []
+
     for t in targets:
         if not os.path.exists(os.path.join(projects_path, t, 'demorepo.yml')):
             print(f"demorepo.yml not found in target {t}. Skipping it.")
@@ -43,14 +44,19 @@ def _run_targets(projects_path, targets, stage, env):
 def run(args):
     stage = args['stage']
 
-    if 'targets' in args:
+    if args['all-targets'] or 'targets' in args:
         # Targets selected manually. It must exists 'path' too
         if 'path' not in args:
             print("If --targets are set manually, --path argument must exist too.")
             sys.exit(-1)
 
         projects_path = args['path']
-        targets = [t.strip() for t in args['targets'].split()]  # strip each target strip to remove blank spaces and \n
+
+        if args['all-targets']:
+            targets = os.listdir(projects_path)
+        else:
+            # strip each target to remove blank spaces, line breaks and other redundant chars
+            targets = [t.strip() for t in args['targets'].split()]
 
         _run_targets(projects_path, targets, stage, args.get('env'))
 

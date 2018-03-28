@@ -36,6 +36,8 @@ if __name__ == '__main__':
                             help='The target projects to run the stage. Can be ALL, or a list of project names '
                                  'separated by spaces (use quotes). If init command was executed before, it will use '
                                  'the computed target projects by default.')
+    parser_init.add_argument('--all-targets', action='store_true',
+                             help='Set all the projects as target, ignoring --targets argument.')
 
 
     parser_integration = subparsers.add_parser('integration')
