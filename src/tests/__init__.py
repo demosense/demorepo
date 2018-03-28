@@ -1,7 +1,3 @@
-import pytest
-from demorepo import commands
-
-
 class MockGit:
     def __init__(self, diff):
         self._diff = '\n'.join(diff)
@@ -33,16 +29,3 @@ def mock_subprocess_run(*args, **kwargs):
             self.stderr = b''
             self.returncode = 0
     return MockReturn()
-
-@pytest.fixture
-def setup_run_init(monkeypatch):
-    args = {
-        'command': 'init',
-        'ci_tool': 'gitlab',
-        'path': 'tests/projects',
-        'recursive_deps': False
-    }
-    # Master branch: all the projects
-    monkeypatch.setenv('CI_COMMIT_REF_NAME', 'master')
-    commands.init(args)
-

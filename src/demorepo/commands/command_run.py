@@ -1,9 +1,9 @@
 import yaml
 import os
 import sys
-import json
 import subprocess
-from . import METADATA_PATH
+from . import ci
+from .targets import append_dependencies
 
 
 def _run_targets(projects_path, targets, stage, env):
@@ -42,36 +42,24 @@ def _run_targets(projects_path, targets, stage, env):
 
 
 def run(args):
+    projects_path = args['path']
     stage = args['stage']
 
-    if args['all-targets'] or 'targets' in args:
-        # Targets selected manually. It must exists 'path' too
-        if 'path' not in args:
-            print("If --targets are set manually, --path argument must exist too.")
-            sys.exit(-1)
-
-        projects_path = args['path']
-
-        if args['all-targets']:
+    if args['all_targets'] or args.get('targets'):
+        # target projects set manually
+        if args['all_targets']:
+            # _run_targets looks for demorepo.yml files: there is no need to filter by folders containing demorepo.yml
             targets = os.listdir(projects_path)
+            print(f"All target projects are: {targets}")
         else:
             # strip each target to remove blank spaces, line breaks and other redundant chars
             targets = [t.strip() for t in args['targets'].split()]
-
-        _run_targets(projects_path, targets, stage, args.get('env'))
-
-    elif os.path.exists(os.path.join(METADATA_PATH, 'init.json')):
-        with open(os.path.join(METADATA_PATH, 'init.json')) as f:
-            init_json = json.loads(f.read())
-        if os.getcwd() not in init_json:
-            print("Init command has never been executed in this path. "
-                  "Run init command before, or provide --targets and --path arguments.")
-            sys.exit(-1)
-        projects_path = init_json[os.getcwd()]["last_init"]["args"]["path"]
-        targets = init_json[os.getcwd()]["last_init"]["targets"]
-
-        _run_targets(projects_path, targets, stage, args.get('env'))
-
+            if args['recursive_deps']:
+                targets = append_dependencies(targets, args)
+                print(f"Target projects with dependencies are: {targets}")
     else:
-        print("Run init command before, or provide --targets and --path arguments.")
-        sys.exit(-1)
+        # Compute targets depending on the selected ci
+        targets = ci.get_targets(args)
+
+    # Now run the stage for target projects
+    _run_targets(projects_path, targets, stage, args.get('env'))

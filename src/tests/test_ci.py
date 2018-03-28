@@ -1,4 +1,4 @@
-from demorepo import commands
+from demorepo.commands import ci
 import git
 import requests
 import json
@@ -20,11 +20,8 @@ def test_last_green_commit_master(monkeypatch):
 
     # Master branch: all the projects
     monkeypatch.setenv('CI_COMMIT_REF_NAME', 'master')
-    commands.init(args)
-    with open('demorepo/commands/metadata/init.json') as f:
-        metadata = json.loads(f.read())
-    result = metadata[os.getcwd()]['last_init']
-    assert {t for t in result['targets']} == set_all_projects
+    targets = ci.get_targets(args)
+    assert {t for t in targets} == set_all_projects
 
 def test_last_green_commit_tag(monkeypatch):
     args = {
@@ -40,11 +37,8 @@ def test_last_green_commit_tag(monkeypatch):
 
     # Tag: all the projects
     monkeypatch.setenv('CI_COMMIT_TAG', '1.0')
-    commands.init(args)
-    with open('demorepo/commands/metadata/init.json') as f:
-        metadata = json.loads(f.read())
-    result = metadata[os.getcwd()]['last_init']
-    assert {t for t in result['targets']} == set_all_projects
+    targets = ci.get_targets(args)
+    assert {t for t in targets} == set_all_projects
 
 
 def test_last_green_commit_release(monkeypatch):
@@ -61,11 +55,8 @@ def test_last_green_commit_release(monkeypatch):
 
     # Release branch: all the projects
     monkeypatch.setenv('CI_COMMIT_REF_NAME', 'release/1.0')
-    commands.init(args)
-    with open('demorepo/commands/metadata/init.json') as f:
-        metadata = json.loads(f.read())
-    result = metadata[os.getcwd()]['last_init']
-    assert {t for t in result['targets']} == set_all_projects
+    targets = ci.get_targets(args)
+    assert {t for t in targets} == set_all_projects
 
 
 def test_last_green_commit_develop_recursive(monkeypatch):
@@ -103,9 +94,5 @@ def test_last_green_commit_develop_recursive(monkeypatch):
     monkeypatch.setenv('GITLAB_API_KEY', '1234')
     monkeypatch.setenv('CI_PROJECT_ID', '1234')
 
-    commands.init(args)
-    with open('demorepo/commands/metadata/init.json') as f:
-        metadata = json.loads(f.read())
-    result = metadata[os.getcwd()]['last_init']
-
-    assert {t for t in result['targets']} == set_projects
+    targets = ci.get_targets(args)
+    assert {t for t in targets} == set_projects

@@ -1,28 +1,55 @@
 from demorepo import commands
 import subprocess
-from . import setup_run_init, mock_subprocess_run, mock_dict
+from . import mock_subprocess_run, mock_dict
 
 
-def test_run_test_from_init(setup_run_init, monkeypatch):
+def test_run_test_from_init(monkeypatch):
 
     args = {
         'command': 'run',
+        'path' : 'tests/projects',
         'stage': 'test',
-        'all-targets': False
+        'targets': None,
+        'all_targets': False,
+        'ci_tool': 'gitlab',
+        'recursive_deps': False
     }
 
     mock_dict['mock_subprocess_run'] = 0
+    monkeypatch.setenv('CI_COMMIT_REF_NAME', 'master')
     monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
     commands.run(args)
-    assert mock_dict['mock_subprocess_run'] == 1
+    assert mock_dict['mock_subprocess_run'] == 2
 
 
-def test_run_deploy_from_init(setup_run_init, monkeypatch):
+def test_run_deploy_from_init(monkeypatch):
     args = {
         'command': 'run',
+        'path': 'tests/projects',
         'stage': 'deploy',
         'env': 'DEPLOY_VAR',
-        'all-targets': False
+        'targets': None,
+        'all_targets': False,
+        'ci_tool': 'gitlab',
+        'recursive_deps': False
+    }
+
+    mock_dict['mock_subprocess_run'] = 0
+    monkeypatch.setenv('CI_COMMIT_REF_NAME', 'master')
+    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    commands.run(args)
+    assert mock_dict['mock_subprocess_run'] == 1
+
+
+def test_run_p1(monkeypatch):
+
+    args = {
+        'command': 'run',
+        'path': 'tests/projects',
+        'stage': 'test',
+        'targets': "p1",
+        'all_targets': False,
+        'recursive_deps': False
     }
 
     mock_dict['mock_subprocess_run'] = 0
@@ -31,14 +58,32 @@ def test_run_deploy_from_init(setup_run_init, monkeypatch):
     assert mock_dict['mock_subprocess_run'] == 1
 
 
-def test_run_p1_p2(setup_run_init, monkeypatch):
+def test_run_p1_recursive(monkeypatch):
 
     args = {
         'command': 'run',
-        'stage': 'test',
         'path': 'tests/projects',
-        'targets': "p1 p2",
-        'all-targets': False
+        'stage': 'test',
+        'targets': "p1",
+        'all_targets': False,
+        'recursive_deps': True
+    }
+
+    mock_dict['mock_subprocess_run'] = 0
+    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    commands.run(args)
+    assert mock_dict['mock_subprocess_run'] == 2
+
+
+def test_run_p1_p3(monkeypatch):
+
+    args = {
+        'command': 'run',
+        'path': 'tests/projects',
+        'stage': 'test',
+        'targets': "p1 p3",
+        'all_targets': False,
+        'recursive_deps': False
     }
 
     mock_dict['mock_subprocess_run'] = 0
@@ -47,14 +92,15 @@ def test_run_p1_p2(setup_run_init, monkeypatch):
     assert mock_dict['mock_subprocess_run'] == 1
 
 
-def test_run_p3(setup_run_init, monkeypatch):
+def test_run_p3(monkeypatch):
 
     args = {
         'command': 'run',
-        'stage': 'test',
         'path': 'tests/projects',
+        'stage': 'test',
         'targets': "p3",
-        'all-targets': False
+        'all_targets': False,
+        'recursive_deps': False
     }
 
     mock_dict['mock_subprocess_run'] = 0
@@ -63,17 +109,17 @@ def test_run_p3(setup_run_init, monkeypatch):
     assert mock_dict['mock_subprocess_run'] == 0
 
 
-def test_run_all(setup_run_init, monkeypatch):
+def test_run_all(monkeypatch):
 
     args = {
         'command': 'run',
-        'stage': 'test',
         'path': 'tests/projects',
+        'stage': 'test',
         'targets': "p2",
-        'all-targets': True
+        'all_targets': True
     }
 
     mock_dict['mock_subprocess_run'] = 0
     monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
     commands.run(args)
-    assert mock_dict['mock_subprocess_run'] == 1
+    assert mock_dict['mock_subprocess_run'] == 2

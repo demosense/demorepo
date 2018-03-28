@@ -2,10 +2,14 @@ import argparse
 import sys
 import os
 from git import Repo
-from .commands import init, run, integration
+import commands
+
+
+__package__ = "demorepo"
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser(prog='demorepo',
                                      description='Tool to manage a monorepo, where projects can be general projects '
                                                  '(language code, build and test management...).')
@@ -14,50 +18,45 @@ if __name__ == '__main__':
                                        help='working mode to group commands based on it.',
                                        dest='command')
 
-    parser_init = subparsers.add_parser('init',
-                                        description="Select the CI tool and parameters to perform actions on demorepo.")
-    parser_init.add_argument('--ci-tool', required=True, choices=['gitlab'],
-                             help='The specific CI tool (e.g.: gitlab, Circle-CI, ...')
-    parser_init.add_argument('-p', '--path', default='projects', help='Path to the projects folder.')
-    parser_init.add_argument('--ci-url', default=None, help='The URL to the CI Server. '
-                                                            'By default (None) uses the general public URL.')
-    parser_init.add_argument('-r', '--recursive-deps', action='store_true',
-                            help='Find projects recursively which depends on modified projects and include them as '
-                                 'target projects.')
+    parser_init = subparsers.add_parser('init', description="Register a git repository in demorepo package.")
+    # TODO: Complete the init part. Useful?
 
     parser_run = subparsers.add_parser('run',
-                                       description='Run the stages for all the projects defined in each demorepo.yml')
+                                       description='Run the stages for the target projects. If --targets and '
+                                                   '--all-targets are not provided, it will check the differences from '
+                                                   'last green commit (using the --ci-tool argument) and set them '
+                                                   'as target projects.')
+
+    parser_run.add_argument('-p', '--path', required=True, help='Path to the projects folder.')
     parser_run.add_argument('-s', '--stage', required=True, help='Stage name in the project demorepo.yml')
     parser_run.add_argument('-e', '--env', help='Optional variable passed to the target stage script.')
-    parser_run.add_argument('-p', '--path', default='projects',
-                            help='Path to the projects folder. If init command was executed before, it will use the '
-                                 'same projects folder path by default.')
-    parser_run.add_argument('-t', '--targets', default='ALL',
-                            help='The target projects to run the stage. Can be ALL, or a list of project names '
-                                 'separated by spaces (use quotes). If init command was executed before, it will use '
-                                 'the computed target projects by default.')
-    parser_init.add_argument('--all-targets', action='store_true',
-                             help='Set all the projects as target, ignoring --targets argument.')
-
+    parser_run.add_argument('-r', '--recursive-deps', action='store_true',
+                            help='Find projects recursively which depends on target projects and include them as '
+                                 'target projects too.')
+    parser_run.add_argument('--ci-tool', default='gitlab', choices=['gitlab'],
+                             help='The specific CI tool (e.g.: gitlab, Circle-CI, ...')
+    parser_run.add_argument('--ci-url', help='the URL to the CI Server. By default uses the general public URL.')
+    parser_run.add_argument('-t', '--targets', help='A list of target project names to run the provided stage, '
+                                                    'separated by blank spaces (use quotes around the string).')
+    parser_run.add_argument('--all-targets', action='store_true',
+                            help='Set all the projects as target, and ignore --targets argument.')
 
     parser_integration = subparsers.add_parser('integration')
-    # TODO: Complete the integration part
+    # TODO: Complete the integration part. Useful or treated as one more stage?
 
     args = vars(parser.parse_args())
-
     print(args)
 
     try:
         Repo(os.getcwd())
     except:
-        print("ERROR: You must be in the root path of a git repository.")
-        sys.exit(-1)
+        parser.error("ERROR: You must be in the root path of a git repository.")
 
     if args['command'] == 'init':
-        init(args)
+        commands.init(args)
     elif args['command'] == 'run':
-        run(args)
+        commands.run(args)
     elif args['command'] == 'integration':
-        integration(args)
+        commands.integration(args)
     else:
         print(parser.parse_args('-h'))

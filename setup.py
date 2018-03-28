@@ -6,12 +6,10 @@ if sys.version_info < (3, 4):
 
 setup(name='demorepo',
       version='1.0',
-      description='Tool to manage a monorepo, where projects can be general projects (code language, build and test management...).',
+      description='Tool to manage a monorepo, where projects can be general projects '
+                  '(code language, build and test management...).',
       author='Javier Cozar',
       author_email='javier.cozar@demosense.com',
       packages=find_packages('src', exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-      package_dir={'': 'src'},
-      package_data={
-            'demorepo': ['commands/scripts/gitlab/*.sh'],
-      }
+      package_dir={'': 'src'}
       )
