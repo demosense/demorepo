@@ -11,5 +11,10 @@ setup(name='demorepo',
       author='Javier Cozar',
       author_email='javier.cozar@demosense.com',
       packages=find_packages('src', exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-      package_dir={'': 'src'}
+      package_dir={'': 'src'},
+      install_requires=[
+        'requests>=2.18,<2.19',
+        'GitPython>=2.1,<2.2',
+        'PyYAML>=3.12,<3.13'
+      ]
       )
