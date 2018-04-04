@@ -1,0 +1,9 @@
+demorepo:
+    version: 1.0.0
+
+ci-tool:
+    name: gitlab
+    url: https://gitlab.com
+    
+projects:
+    path: projects

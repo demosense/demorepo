@@ -21,6 +21,28 @@ if __name__ == '__main__':
     parser_init = subparsers.add_parser('init', description="Register a git repository in demorepo package.")
     # TODO: Complete the init part. Useful?
 
+    parser_info = subparsers.add_parser('info', description="Get the demorepo metadata, obtained from config.yml.")
+    parser_info_subparsers = parser_info.add_subparsers(title='section', description='section to get information',
+                                                        help='working mode to group commands based on it.',
+                                                        dest='section')
+
+    parser_info_demorepo = parser_info_subparsers.add_parser(
+        'demorepo', description='Information about the demorepo.')
+    parser_info_demorepo.add_argument('-v', '--version', action='store_true', help='Version of the demorepo.')
+
+    parser_info_ci_tool = parser_info_subparsers.add_parser(
+        'ci-tool', description='Information about the used ci-tool.')
+    parser_info_ci_tool.add_argument('-n', '--name', action='store_true', help='ci-tool name.')
+    parser_info_ci_tool.add_argument('-u', '--url', action='store_true', help='ci-tool url.')
+
+    parser_info_projects = parser_info_subparsers.add_parser(
+        'projects', description='Information about the projects.')
+    parser_info_projects.add_argument('-p', '--path', action='store_true', help='Projects path.')
+    # TODO: Implement this
+    # parser_info_projects.add_argument('-o', '--order', help='Dependency order of projects. Not specified projects '
+    #                                                         'have no dependencies.')
+
+
     parser_run = subparsers.add_parser('run',
                                        description='Run the stages for the target projects. If --targets and '
                                                    '--all-targets are not provided, it will check the differences from '
@@ -47,9 +69,6 @@ if __name__ == '__main__':
     # TODO: Complete the integration part. Useful or treated as one more stage?
 
     args = vars(parser.parse_args())
-    print(args)
-
-    sys.exit(0)
 
     try:
         Repo(os.getcwd())
@@ -58,6 +77,8 @@ if __name__ == '__main__':
 
     if args['command'] == 'init':
         commands.init(args)
+    if args['command'] == 'info':
+        commands.info(args)
     elif args['command'] == 'run':
         commands.run(args)
     elif args['command'] == 'integration':
