@@ -1,3 +1,6 @@
+import subprocess
+
+
 class MockGit:
     def __init__(self, diff):
         self._diff = '\n'.join(diff)
@@ -21,11 +24,9 @@ class MockGitRepo:
 mock_dict = {}
 
 
+original_subprocess_run = subprocess.run
+
+
 def mock_subprocess_run(*args, **kwargs):
     mock_dict["mock_subprocess_run"] += 1
-    class MockReturn:
-        def __init__(self):
-            self.stdout = b''
-            self.stderr = b''
-            self.returncode = 0
-    return MockReturn()
+    return original_subprocess_run(*args, **kwargs)

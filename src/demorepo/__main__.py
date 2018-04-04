@@ -2,6 +2,7 @@ import argparse
 import os
 from git import Repo
 import demorepo.commands as commands
+import sys
 
 
 __package__ = "demorepo"
@@ -28,7 +29,9 @@ if __name__ == '__main__':
 
     parser_run.add_argument('-p', '--path', required=True, help='Path to the projects folder.')
     parser_run.add_argument('-s', '--stage', required=True, help='Stage name in the project demorepo.yml')
-    parser_run.add_argument('-e', '--env', help='Optional variable passed to the target stage script.')
+    parser_run.add_argument('-e', '--env', action='append', help='Optional variables passed to the target stage script.'
+                                                                 ' The format is VAR_NAME=VAR_VALUE. '
+                                                                 'Multiple env vars can be specified.')
     parser_run.add_argument('-r', '--recursive-deps', action='store_true',
                             help='Find projects recursively which depends on target projects and include them as '
                                  'target projects too.')
@@ -45,6 +48,8 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
     print(args)
+
+    sys.exit(0)
 
     try:
         Repo(os.getcwd())

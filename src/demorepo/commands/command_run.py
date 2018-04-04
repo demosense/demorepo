@@ -14,7 +14,6 @@ def _run_targets(projects_path, targets, stage, env):
             print(f"demorepo.yml not found in target {t}. Skipping it.")
             continue
 
-        print(t)
         with open(os.path.join(projects_path, t, 'demorepo.yml')) as f:
             demorepo_yml = yaml.load(f.read())
 
@@ -26,7 +25,11 @@ def _run_targets(projects_path, targets, stage, env):
 
         child_environ = os.environ.copy()
         if env:
-            child_environ["DEMOREPO_ENV"] = env
+            for varset in env:
+                var_name, var_value = varset.split("=")
+                var_name = var_name.strip()
+                var_value = var_value.strip()
+                child_environ[var_name] = var_value
 
         p = subprocess.run(script.split(), env=child_environ, cwd=os.path.join(projects_path, t),
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)

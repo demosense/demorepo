@@ -27,7 +27,7 @@ def test_run_deploy_from_init(monkeypatch):
         'command': 'run',
         'path': 'tests/projects',
         'stage': 'deploy',
-        'env': 'DEPLOY_VAR',
+        'env': ['DEPLOY_VAR=DEPLOY_VAR'],
         'targets': None,
         'all_targets': False,
         'ci_tool': 'gitlab',
