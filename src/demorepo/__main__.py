@@ -72,8 +72,8 @@ if __name__ == '__main__':
 
     try:
         Repo(os.getcwd())
-    except:
-        parser.error("ERROR: You must be in the root path of a git repository.")
+    except Exception as e:
+        parser.error(f"ERROR: You must be in the root path of a git repository: {e}.")
 
     if args['command'] == 'init':
         commands.init(args)

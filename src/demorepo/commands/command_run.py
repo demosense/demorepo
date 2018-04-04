@@ -29,9 +29,14 @@ def _run_targets(projects_path, targets, stage, env):
                 var_name, var_value = varset.split("=")
                 var_name = var_name.strip()
                 var_value = var_value.strip()
+                if var_value[0] == '$':
+                    var_value = subprocess.run(f'echo {var_value}', shell=True, env=child_environ,
+                                               stdout=subprocess.PIPE).stdout.decode()
                 child_environ[var_name] = var_value
 
-        p = subprocess.run(script.split(), env=child_environ, cwd=os.path.join(projects_path, t),
+        print(script)
+        print(child_environ)
+        p = subprocess.run(script, shell=True, env=child_environ, cwd=os.path.join(projects_path, t),
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout = p.stdout.decode()
         stderr = p.stderr.decode()
@@ -62,7 +67,11 @@ def run(args):
                 print(f"Target projects with dependencies are: {targets}")
     else:
         # Compute targets depending on the selected ci
-        targets = ci.get_targets(args)
+        try:
+            targets = ci.get_targets(args)
+        except Exception as e:
+            print(f"ERROR: Could not obtain target projects from ci-tool: {e}.")
+            sys.exit(-1)
 
     # Now run the stage for target projects
     _run_targets(projects_path, targets, stage, args.get('env'))

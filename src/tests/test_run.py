@@ -27,7 +27,7 @@ def test_run_deploy_from_init(monkeypatch):
         'command': 'run',
         'path': 'tests/projects',
         'stage': 'deploy',
-        'env': ['DEPLOY_VAR=DEPLOY_VAR'],
+        'env': ['DEPLOY_VAR=DEPLOY_VAR', 'DEPLOY_ENV_VAR=$DEPLOY_ENV_VAR_VALUE'],
         'targets': None,
         'all_targets': False,
         'ci_tool': 'gitlab',
@@ -36,9 +36,10 @@ def test_run_deploy_from_init(monkeypatch):
 
     mock_dict['mock_subprocess_run'] = 0
     monkeypatch.setenv('CI_COMMIT_REF_NAME', 'master')
+    monkeypatch.setenv('DEPLOY_ENV_VAR_VALUE', 'Valor de DEPLOY_ENV_VAR_VALUE')
     monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
     commands.run(args)
-    assert mock_dict['mock_subprocess_run'] == 1
+    assert mock_dict['mock_subprocess_run'] == 2
 
 
 def test_run_p1(monkeypatch):
