@@ -31,7 +31,7 @@ def _run_targets(projects_path, targets, stage, env):
                 var_value = var_value.strip()
                 if var_value[0] == '$':
                     var_value = subprocess.run(f'echo {var_value}', shell=True, env=child_environ,
-                                               stdout=subprocess.PIPE).stdout.decode()
+                                               stdout=subprocess.PIPE).stdout.decode().strip()
                 child_environ[var_name] = var_value
 
         p = subprocess.run(script, shell=True, env=child_environ, cwd=os.path.join(projects_path, t),

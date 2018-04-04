@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo "Deploy has been done using "$DEPLOY_VAR!" and "$DEPLOY_ENV_VAR" env vars."
+echo "Deploy has been done using "$DEPLOY_VAR!" and "$1" env vars."

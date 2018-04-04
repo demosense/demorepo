@@ -2,4 +2,4 @@ test:
     script: ./test.sh 
 
 deploy: 
-    script: ./deploy.sh $DEPLOY_VAR $DEPLOY_ENV_VAR
+    script: ./deploy.sh "${DEPLOY_ENV_VAR}"
