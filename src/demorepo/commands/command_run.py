@@ -34,8 +34,6 @@ def _run_targets(projects_path, targets, stage, env):
                                                stdout=subprocess.PIPE).stdout.decode()
                 child_environ[var_name] = var_value
 
-        print(script)
-        print(child_environ)
         p = subprocess.run(script, shell=True, env=child_environ, cwd=os.path.join(projects_path, t),
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout = p.stdout.decode()
