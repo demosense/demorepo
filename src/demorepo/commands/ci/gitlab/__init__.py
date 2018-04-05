@@ -11,6 +11,10 @@ defaults = {
 }
 
 
+def info():
+    return "Apart of env vars from pipeline, it requires GITLAB_API_KEY env var to use the gitlab api."
+
+
 def get_target_projects(env_vars):
     git_branch = os.getenv("CI_COMMIT_REF_NAME")
     git_commit_tag = os.getenv("CI_COMMIT_TAG")
