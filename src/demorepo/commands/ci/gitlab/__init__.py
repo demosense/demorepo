@@ -46,7 +46,7 @@ def get_target_projects(env_vars):
             print(f"Using as last green commit the last commit in common between parent branch {parent_branch} "
                   f"and HEAD: {last_green_commit}")
         else:
-            last_green_commit = response[0][".sha"].strip()
+            last_green_commit = response[0]["sha"].strip()
 
         print(f"sha of last green commit in the branch {git_branch} is {last_green_commit}")
 
