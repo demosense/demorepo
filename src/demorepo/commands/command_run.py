@@ -66,7 +66,6 @@ def run(args):
     else:
         # Compute targets depending on the selected ci
         try:
-            print(f"{args['ci_tool']} ci-tool selected. {ci.info()}")
             targets = ci.get_targets(args)
         except Exception as e:
             print(f"ERROR: Could not obtain target projects from ci-tool: {e}.")

@@ -3,7 +3,7 @@ import subprocess
 from . import mock_subprocess_run, mock_dict
 
 
-def test_run_test_from_init(monkeypatch):
+def test_run_test_from_citool(monkeypatch):
 
     args = {
         'command': 'run',
@@ -22,7 +22,7 @@ def test_run_test_from_init(monkeypatch):
     assert mock_dict['mock_subprocess_run'] == 2
 
 
-def test_run_deploy_from_init(monkeypatch):
+def test_run_deploy_from_citool(monkeypatch):
     args = {
         'command': 'run',
         'path': 'tests/projects',
