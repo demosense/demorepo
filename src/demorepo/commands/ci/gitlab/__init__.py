@@ -41,7 +41,7 @@ def get_target_projects(env_vars):
                 parent_branch = "origin/develop"
 
             # Commits in both this branch and in develop. Get the newer one.
-            last_green_commit = repo.merge_base(parent_branch, env_vars['$CI_COMMIT_SHA'])[0].hexsha
+            last_green_commit = repo.merge_base(parent_branch, env_vars['CI_COMMIT_SHA'])[0].hexsha
 
             print(f"Using as last green commit the last commit in common between parent branch {parent_branch} "
                   f"and HEAD: {last_green_commit}")
