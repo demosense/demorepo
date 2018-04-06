@@ -76,6 +76,23 @@ def test_run_p1_recursive(monkeypatch):
     assert mock_dict['mock_subprocess_run'] == 2
 
 
+def test_run_p3_recursive(monkeypatch):
+
+    args = {
+        'command': 'run',
+        'path': 'tests/projects',
+        'stage': 'test',
+        'targets': "p3",
+        'all_targets': False,
+        'recursive_deps': True
+    }
+
+    mock_dict['mock_subprocess_run'] = 0
+    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    commands.run(args)
+    assert mock_dict['mock_subprocess_run'] == 0
+
+
 def test_run_p1_p3(monkeypatch):
 
     args = {

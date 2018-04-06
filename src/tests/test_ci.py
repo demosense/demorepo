@@ -1,7 +1,6 @@
 from demorepo.commands import ci
 import git
 import requests
-import json
 import os
 from . import MockGitRepo
 
@@ -74,7 +73,7 @@ def test_last_green_commit_develop_recursive(monkeypatch):
     def mock_get(*args, **kwargs):
         response = [
             {
-                ".sha": '85ad21771ffab14ac3a5f0347c00e28a9bb45cc1'
+                "sha": '85ad21771ffab14ac3a5f0347c00e28a9bb45cc1'
             }
         ]
 

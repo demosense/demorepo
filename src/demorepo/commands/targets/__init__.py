@@ -58,10 +58,11 @@ def append_dependencies(targets, args):
 
     # Now, for each modified project, get its name (to use the dependents dict) and add its dependencies
     s = set()
-    modified_names = [m[(m.rfind('/') + 1):] for m in targets]
-    for m in modified_names:
+    for m in targets:
         s.add(m)
-        add_dependencies(m, s)
+        # only if project is in dependents list (recursive option implemented for this project type)
+        if m in dependents:
+            add_dependencies(m, s)
 
     # Return the extended list of target projects
     return list(s)
