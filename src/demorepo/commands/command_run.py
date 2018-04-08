@@ -40,10 +40,12 @@ def _run_targets(projects_path, targets, stage, env):
         stderr = p.stderr.decode()
         print(f"Script of stage {stage} has been executed.\nStdout: {stdout}.\nStderr: {stderr}")
 
-        if p.returncode < 0:
+        if p.returncode != 0:
             errors.append({t: f"Error executing the script of stage {stage}."})
 
     if len(errors) > 0:
+        print("Errors running scripts in this stage. Printing them as key: [list of errors]:")
+        print(errors)
         sys.exit(-1)
 
 

@@ -30,3 +30,7 @@ original_subprocess_run = subprocess.run
 def mock_subprocess_run(*args, **kwargs):
     mock_dict["mock_subprocess_run"] += 1
     return original_subprocess_run(*args, **kwargs)
+
+
+def mock_sys_exit(*args, **kwargs):
+    mock_dict["mock_sys_exit"] += 1
