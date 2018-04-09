@@ -45,9 +45,12 @@ def append_dependencies(targets, args):
         requirements_line = "../" + sub1.strip()  # strip to remove any possible whitespaces or line breaks
         for sub2 in python_project_names:
             requirements_paths = glob.glob(f"{os.path.join(args['path'], sub2)}/requirements*")
-            if any(requirements_line == l.strip() for req_path in requirements_paths
-                   for l in open(req_path).readlines()):
-                dependents[sub1].append(sub2)
+
+            for req_path in requirements_paths:
+                with open(req_path) as f:
+                    if any(requirements_line == l.strip() for l in f.readlines()):
+                        dependents[sub1].append(sub2)
+                        break
 
     # This recursive function add the dependencies in the set s when e is marked as modified
     def add_dependencies(e, s):

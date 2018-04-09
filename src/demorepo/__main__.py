@@ -58,7 +58,7 @@ if __name__ == '__main__':
                             help='Find projects recursively which depends on target projects and include them as '
                                  'target projects too.')
     parser_run.add_argument('--ci-tool', default='gitlab', choices=['gitlab'],
-                             help='The specific CI tool (e.g.: gitlab, Circle-CI, ....')
+                             help='The specific CI tool (e.g.: gitlab, Circle-CI, ....)')
     parser_run.add_argument('--ci-url', help='the URL to the CI Server. By default uses the general public URL.')
     parser_run.add_argument('-t', '--targets', help='A list of target project names to run the provided stage, '
                                                     'separated by blank spaces (use quotes around the string).')
