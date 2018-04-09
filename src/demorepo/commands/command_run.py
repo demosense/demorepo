@@ -9,6 +9,18 @@ from .targets import append_dependencies
 def _run_targets(projects_path, targets, stage, env):
     errors = []
 
+    # apply the order to the targets list, just if config.yml exists in root path
+    config_path = os.path.join(os.getcwd(), 'config.yml')
+    if os.path.exists(config_path):
+        with open(config_path) as f:
+            config = yaml.load(f.read())
+        # get ordered list from projects field. If do not exists, use an empty list
+        order_list = config["projects"].get("order", [])
+        not_ordered_t = [t for t in targets if t not in order_list]
+        ordered_t = [t for t in order_list if t in targets]  # in this case, the order is the same as in order_list
+        targets = ordered_t + not_ordered_t
+        print(f"targets has been ordered: {targets}")
+
     for t in targets:
         if not os.path.exists(os.path.join(projects_path, t, 'demorepo.yml')):
             print(f"demorepo.yml not found in target {t}. Skipping it.")

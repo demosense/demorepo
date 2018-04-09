@@ -1,4 +1,6 @@
 import subprocess
+import os
+import pytest
 
 
 class MockGit:
@@ -34,3 +36,10 @@ def mock_subprocess_run(*args, **kwargs):
 
 def mock_sys_exit(*args, **kwargs):
     mock_dict["mock_sys_exit"] += 1
+
+
+@pytest.fixture()
+def setup(monkeypatch):
+    actual_path = os.getcwd()
+    monkeypatch.setattr(os, 'getcwd', lambda: os.path.join(actual_path, 'tests'))
+    yield monkeypatch

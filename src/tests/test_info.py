@@ -1,17 +1,15 @@
 from demorepo.commands import info
-import os
 import builtins
 import yaml
+from . import setup
 
 mock_print_args_kwargs = []
 def mock_return(*args):
     global mock_print_args_kwargs
     mock_print_args_kwargs += args
 
-def test_info(monkeypatch):
-    actual_path = os.getcwd()
-    monkeypatch.setattr(os, 'getcwd', lambda: os.path.join(actual_path, 'tests'))
-    monkeypatch.setattr(builtins, 'print', mock_return)
+def test_info(setup):
+    setup.setattr(builtins, 'print', mock_return)
     with open('tests/config.yml') as f:
         config = yaml.load(f.read())
 
@@ -61,7 +59,8 @@ def test_info(monkeypatch):
     args = {
         'command': 'info',
         'section': 'projects',
-        'path': True
+        'path': True,
+        'order': False
     }
     info(args)
     assert mock_print_args_kwargs[-1] == config["projects"]["path"]
@@ -69,7 +68,17 @@ def test_info(monkeypatch):
     args = {
         'command': 'info',
         'section': 'projects',
-        'path': False
+        'path': False,
+        'order': True
+    }
+    info(args)
+    assert mock_print_args_kwargs[-1] == config["projects"]["order"]
+
+    args = {
+        'command': 'info',
+        'section': 'projects',
+        'path': False,
+        'order': False
     }
     info(args)
     assert mock_print_args_kwargs[-1] == "No valid option provided for info projects."

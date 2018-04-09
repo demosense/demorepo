@@ -43,5 +43,7 @@ def _ci_tool(config, args):
 def _projects(config, args):
     if args["path"]:
         print(config["path"])
+    elif args["order"]:
+        print(config["order"])
     else:
         print("No valid option provided for info projects.")

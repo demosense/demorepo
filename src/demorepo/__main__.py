@@ -39,8 +39,8 @@ if __name__ == '__main__':
         'projects', description='Information about the projects.')
     parser_info_projects.add_argument('-p', '--path', action='store_true', help='Projects path.')
     # TODO: Implement this
-    # parser_info_projects.add_argument('-o', '--order', help='Dependency order of projects. Not specified projects '
-    #                                                         'have no dependencies.')
+    parser_info_projects.add_argument('-o', '--order', action='store_true',
+                                      help='Dependency order of projects. Not specified projects have no dependencies.')
 
 
     parser_run = subparsers.add_parser('run',

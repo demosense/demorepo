@@ -1,10 +1,10 @@
 from demorepo import commands
 import subprocess
-from . import mock_subprocess_run, mock_sys_exit, mock_dict
+from . import mock_subprocess_run, mock_sys_exit, mock_dict, setup
 import sys
 
 
-def test_run_test_from_citool(monkeypatch):
+def test_run_test_from_citool(setup):
 
     args = {
         'command': 'run',
@@ -17,13 +17,13 @@ def test_run_test_from_citool(monkeypatch):
     }
 
     mock_dict['mock_subprocess_run'] = 0
-    monkeypatch.setenv('CI_COMMIT_REF_NAME', 'master')
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    setup.setenv('CI_COMMIT_REF_NAME', 'master')
+    setup.setattr(subprocess, 'run', mock_subprocess_run)
     commands.run(args)
     assert mock_dict['mock_subprocess_run'] == 2
 
 
-def test_run_deploy_from_citool(monkeypatch):
+def test_run_deploy_from_citool(setup):
     args = {
         'command': 'run',
         'path': 'tests/projects',
@@ -36,14 +36,14 @@ def test_run_deploy_from_citool(monkeypatch):
     }
 
     mock_dict['mock_subprocess_run'] = 0
-    monkeypatch.setenv('CI_COMMIT_REF_NAME', 'master')
-    monkeypatch.setenv('DEPLOY_ENV_VAR_VALUE', 'Valor de DEPLOY_ENV_VAR_VALUE')
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    setup.setenv('CI_COMMIT_REF_NAME', 'master')
+    setup.setenv('DEPLOY_ENV_VAR_VALUE', 'Valor de DEPLOY_ENV_VAR_VALUE')
+    setup.setattr(subprocess, 'run', mock_subprocess_run)
     commands.run(args)
     assert mock_dict['mock_subprocess_run'] == 2
 
 
-def test_run_p1(monkeypatch):
+def test_run_p1(setup):
 
     args = {
         'command': 'run',
@@ -55,12 +55,12 @@ def test_run_p1(monkeypatch):
     }
 
     mock_dict['mock_subprocess_run'] = 0
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    setup.setattr(subprocess, 'run', mock_subprocess_run)
     commands.run(args)
     assert mock_dict['mock_subprocess_run'] == 1
 
 
-def test_run_p1_recursive(monkeypatch):
+def test_run_p1_recursive(setup):
 
     args = {
         'command': 'run',
@@ -72,12 +72,12 @@ def test_run_p1_recursive(monkeypatch):
     }
 
     mock_dict['mock_subprocess_run'] = 0
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    setup.setattr(subprocess, 'run', mock_subprocess_run)
     commands.run(args)
     assert mock_dict['mock_subprocess_run'] == 2
 
 
-def test_run_p3_recursive(monkeypatch):
+def test_run_p3_recursive(setup):
 
     args = {
         'command': 'run',
@@ -89,12 +89,12 @@ def test_run_p3_recursive(monkeypatch):
     }
 
     mock_dict['mock_subprocess_run'] = 0
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    setup.setattr(subprocess, 'run', mock_subprocess_run)
     commands.run(args)
     assert mock_dict['mock_subprocess_run'] == 0
 
 
-def test_run_p1_p3(monkeypatch):
+def test_run_p1_p3(setup):
 
     args = {
         'command': 'run',
@@ -106,12 +106,12 @@ def test_run_p1_p3(monkeypatch):
     }
 
     mock_dict['mock_subprocess_run'] = 0
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    setup.setattr(subprocess, 'run', mock_subprocess_run)
     commands.run(args)
     assert mock_dict['mock_subprocess_run'] == 1
 
 
-def test_run_p3(monkeypatch):
+def test_run_p3(setup):
 
     args = {
         'command': 'run',
@@ -123,12 +123,12 @@ def test_run_p3(monkeypatch):
     }
 
     mock_dict['mock_subprocess_run'] = 0
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    setup.setattr(subprocess, 'run', mock_subprocess_run)
     commands.run(args)
     assert mock_dict['mock_subprocess_run'] == 0
 
 
-def test_run_all(monkeypatch):
+def test_run_all(setup):
 
     args = {
         'command': 'run',
@@ -139,12 +139,12 @@ def test_run_all(monkeypatch):
     }
 
     mock_dict['mock_subprocess_run'] = 0
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    setup.setattr(subprocess, 'run', mock_subprocess_run)
     commands.run(args)
     assert mock_dict['mock_subprocess_run'] == 2
 
 
-def test_run_p3_fails(monkeypatch):
+def test_run_p3_fails(setup):
 
     args = {
         'command': 'run',
@@ -157,8 +157,8 @@ def test_run_p3_fails(monkeypatch):
 
     mock_dict['mock_subprocess_run'] = 0
     mock_dict['mock_sys_exit'] = 0
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
-    monkeypatch.setattr(sys, 'exit', mock_sys_exit)
+    setup.setattr(subprocess, 'run', mock_subprocess_run)
+    setup.setattr(sys, 'exit', mock_sys_exit)
     commands.run(args)
     assert mock_dict['mock_subprocess_run'] == 1
     assert mock_dict['mock_sys_exit'] == 1
