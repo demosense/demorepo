@@ -1,0 +1,2 @@
+failure:
+    script: ./failure.sh

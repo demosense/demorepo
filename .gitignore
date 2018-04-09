@@ -1,0 +1,19 @@
+*.idea/
+*.cache/
+*__pycache__/
+*DS_Store*
+
+# Compiled python modules.
+*.pyc
+
+# Setuptools distribution folder.
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
+
+# virtual env folder.
+venv
+
+# metadata folder where the init.json is stored after a CLI init run.
+src/demorepo/commands/metadata/
