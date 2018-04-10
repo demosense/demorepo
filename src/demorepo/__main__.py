@@ -2,7 +2,6 @@ import argparse
 import os
 from git import Repo
 import demorepo.commands as commands
-import sys
 
 
 __package__ = "demorepo"
@@ -16,7 +15,7 @@ if __name__ == '__main__':
 
     subparsers = parser.add_subparsers(title='working mode', description='init, run or integration',
                                        help='working mode to group commands based on it.',
-                                       dest='command')
+                                       dest='working_mode')
 
     parser_init = subparsers.add_parser('init', description="Register a git repository in demorepo package.")
     # TODO: Complete the init part. Useful?
@@ -100,15 +99,15 @@ if __name__ == '__main__':
     except Exception as e:
         parser.error(f"ERROR: You must be in the root path of a git repository: {e}.")
 
-    if args['command'] == 'init':
+    if args['working_mode'] == 'init':
         commands.init(args)
-    if args['command'] == 'info':
+    if args['working_mode'] == 'info':
         commands.info(args)
-    elif args['command'] == 'run':
+    elif args['working_mode'] == 'run':
         commands.run(args)
-    elif args['command'] == 'run-stage':
+    elif args['working_mode'] == 'run-stage':
         commands.run_stage(args)
-    elif args['command'] == 'integration':
+    elif args['working_mode'] == 'integration':
         commands.integration(args)
     else:
         print(parser.parse_args('-h'))

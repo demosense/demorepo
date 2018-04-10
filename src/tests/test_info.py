@@ -14,7 +14,7 @@ def test_info(setup):
         config = yaml.load(f.read())
 
     args = {
-        'command': 'info',
+        'working_mode': 'info',
         'section': 'demorepo',
         'version': True
     }
@@ -22,7 +22,7 @@ def test_info(setup):
     assert mock_print_args_kwargs[-1] == config["demorepo"]["version"]
 
     args = {
-        'command': 'info',
+        'working_mode': 'info',
         'section': 'demorepo',
         'version': False
     }
@@ -30,7 +30,7 @@ def test_info(setup):
     assert mock_print_args_kwargs[-1] == "No valid option provided for info demorepo."
 
     args = {
-        'command': 'info',
+        'working_mode': 'info',
         'section': 'ci-tool',
         'name': True,
         'url': True
@@ -39,7 +39,7 @@ def test_info(setup):
     assert mock_print_args_kwargs[-1] == config["ci-tool"]["name"]
 
     args = {
-        'command': 'info',
+        'working_mode': 'info',
         'section': 'ci-tool',
         'name': False,
         'url': True
@@ -48,7 +48,7 @@ def test_info(setup):
     assert mock_print_args_kwargs[-1] == config["ci-tool"]["url"]
 
     args = {
-        'command': 'info',
+        'working_mode': 'info',
         'section': 'ci-tool',
         'name': False,
         'url': False
@@ -57,7 +57,7 @@ def test_info(setup):
     assert mock_print_args_kwargs[-1] == "No valid option provided for info ci-tool."
 
     args = {
-        'command': 'info',
+        'working_mode': 'info',
         'section': 'projects',
         'path': True,
         'order': False
@@ -66,7 +66,7 @@ def test_info(setup):
     assert mock_print_args_kwargs[-1] == config["projects"]["path"]
 
     args = {
-        'command': 'info',
+        'working_mode': 'info',
         'section': 'projects',
         'path': False,
         'order': True
@@ -75,7 +75,7 @@ def test_info(setup):
     assert mock_print_args_kwargs[-1] == config["projects"]["order"]
 
     args = {
-        'command': 'info',
+        'working_mode': 'info',
         'section': 'projects',
         'path': False,
         'order': False

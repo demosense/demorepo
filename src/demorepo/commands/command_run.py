@@ -56,9 +56,21 @@ def _run_targets(projects_path, targets, env, *, stage=None, command=None):
         stderr = p.stderr.decode()
 
         if stage is not None:
-            print(f"Script of stage {stage} has been executed.\nStdout: {stdout}.\nStderr: {stderr}")
+            print(f"Script of stage {stage} has been executed.")
+            print("Stdout:")
+            print("=" * 20)
+            print(stdout)
+            print("Stderr:")
+            print("=" * 20)
+            print(stderr)
         else:
-            print(f"Custom script has been executed.\nStdout: {stdout}.\nStderr: {stderr}")
+            print("Custom script has been executed.")
+            print("Stdout:")
+            print("=" * 20)
+            print(stdout)
+            print("Stderr:")
+            print("=" * 20)
+            print(stderr)
 
         if p.returncode != 0:
             errors.append({t: f"Error executing the script of stage {stage}."})

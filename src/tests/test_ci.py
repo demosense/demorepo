@@ -7,7 +7,7 @@ from . import MockGitRepo, setup
 
 def test_last_green_commit_master(setup):
     args = {
-        'command': 'init',
+        'working_mode': 'init',
         'ci_tool': 'gitlab',
         'path': 'tests/projects',
         'recursive_deps': False}
@@ -24,7 +24,7 @@ def test_last_green_commit_master(setup):
 
 def test_last_green_commit_tag(setup):
     args = {
-        'command': 'init',
+        'working_mode': 'init',
         'ci_tool': 'gitlab',
         'path': 'tests/projects',
         'recursive_deps': False}
@@ -42,7 +42,7 @@ def test_last_green_commit_tag(setup):
 
 def test_last_green_commit_release(setup):
     args = {
-        'command': 'init',
+        'working_mode': 'init',
         'ci_tool': 'gitlab',
         'path': 'tests/projects',
         'recursive_deps': False}
@@ -60,7 +60,7 @@ def test_last_green_commit_release(setup):
 
 def test_last_green_commit_develop_recursive(setup):
     args = {
-        'command': 'init',
+        'working_mode': 'init',
         'ci_tool': 'gitlab',
         'path': 'tests/projects',
         'recursive_deps': True}
