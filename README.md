@@ -42,7 +42,8 @@ python3 -m demorepo [command] [options]
 There are four commands which can be used:
 -  init: Not implemented yet. Will be used to create the demorepo `config.yml` file, which will include the metadata about the demorepo.
 -  info: Used to print the metadata stored in the `config.yml` file. Right now it is created manually, but will be handled by the demorepo tool.
--  run: Used to run scripts related to stages in `demorepo.yml` files placed in individual project folders.
+-  run: Used to run shell commands for the selected target project.
+-  run-stage: Used to run scripts related to stages in `demorepo.yml` files placed in individual project folders.
 -  integration: Not implemented yet. Will be used to run integration tests.
 
 ### init
@@ -90,6 +91,32 @@ projects:
 python3 -m demorepo run {options}
 ```
 
+Run the specified shell command for each target project. The target projects are selected by the option `-t` or `--all-targets`. Otherwise, the ci-tool will be used to get the last green commit and select the target projects those which have been modified from such commit.
+
+The options of the run command are:
+
+#### **Mandatory:**
+
+-  -p / --path [PATH]: The path to the projects folder.
+-  -c / --command [COMMAND]: The shell command to execute. If it includes env vars, it is better to provide them using the -e option.
+
+#### **Optional:**
+
+-  -r / --recursive: Detect inter-project dependencies and, if one project is selected as target, all the projects which depends on such project will be considered as targets too. **Only implemented for python projects.**
+-  -t / --targets: A list of target project names, separated by blank spaces. It is recommended to wrap it in double quotes (mandatory if there are blank spaces in the string)
+-  --all-targets: If this flag is present, all the projects will be selected as targets.
+-  --ci-tool: if -t and --all-targets are not used, the ci-tool will be used to select the target projects. This parameter is the name of the ci-tool to be used. **Right now it is only implemented for gitlab**. gitlab is the default value.
+-  --ci-url: The url for the ci-tool to be used.
+-  -e / --env: Environment variables passed to the shell command. Multiple env vars can be used. The format is: `-e variable_name=variable_value` (and the variable can be used as $variable_name as an usual env var).
+
+
+
+### run-stage
+
+```
+python3 -m demorepo run-stage {options}
+```
+
 Run the stage script (**right now only one script per stage is allowd**) for each target project. The target projects are selected by the option `-t` or `--all-targets`. Otherwise, the ci-tool will be used to get the last green commit and select the target projects those which have been modified from such commit.
 
 Each project **must** include a `demorepo.yml` file (otherwise it is not considered a project by the CLI tool). The structure of this file is `stage: shell command` (_we recommend the shell command to be a path to an executable script_). An example of `demorepo.yml` file is as follows:
@@ -102,7 +129,7 @@ deploy:
     script: ./deploy.sh $my_var1 $my_var2
 ```
 
-The options of the run command are:
+The options of the run-stage command are:
 
 #### **Mandatory:**
 
@@ -112,10 +139,11 @@ The options of the run command are:
 #### **Optional:**
 
 -  -r / --recursive: Detect inter-project dependencies and, if one project is selected as target, all the projects which depends on such project will be considered as targets too. **Only implemented for python projects.**
--  -t / --targets: A list of target project names, separated by commas. It is recommended to wrap it in double quotes (mandatory if there are blank spaces in the string)
+-  -t / --targets: A list of target project names, separated by blank spaces. It is recommended to wrap it in double quotes (mandatory if there are blank spaces in the string)
 -  --all-targets: If this flag is present, all the projects will be selected as targets.
 -  --ci-tool: if -t and --all-targets are not used, the ci-tool will be used to select the target projects. This parameter is the name of the ci-tool to be used. **Right now it is only implemented for gitlab**. gitlab is the default value.
 -  --ci-url: The url for the ci-tool to be used.
+-  -e / --env: Environment variables passed to the shell command. Multiple env vars can be used. The format is: `-e variable_name=variable_value` (and the variable can be used as $variable_name as an usual env var).
 
 ### integration
 

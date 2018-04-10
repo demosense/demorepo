@@ -6,7 +6,7 @@ from . import ci
 from .targets import append_dependencies
 
 
-def _run_targets(projects_path, targets, stage, env):
+def _run_targets(projects_path, targets, env, *, stage=None, command=None):
     errors = []
 
     # apply the order to the targets list, just if config.yml exists in root path
@@ -26,14 +26,18 @@ def _run_targets(projects_path, targets, stage, env):
             print(f"demorepo.yml not found in target {t}. Skipping it.")
             continue
 
-        with open(os.path.join(projects_path, t, 'demorepo.yml')) as f:
-            demorepo_yml = yaml.load(f.read())
 
-        if demorepo_yml is None or stage not in demorepo_yml:
-            print(f"stage {stage} not found in demorepo.yml of target {t}. Skipping it.")
-            continue
+        if stage is not None:
+            with open(os.path.join(projects_path, t, 'demorepo.yml')) as f:
+                demorepo_yml = yaml.load(f.read())
 
-        script = demorepo_yml[stage]['script']
+            if demorepo_yml is None or stage not in demorepo_yml:
+                print(f"stage {stage} not found in demorepo.yml of target {t}. Skipping it.")
+                continue
+
+            script = demorepo_yml[stage]['script']
+        else:
+            script = command
 
         child_environ = os.environ.copy()
         if env:
@@ -50,7 +54,11 @@ def _run_targets(projects_path, targets, stage, env):
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout = p.stdout.decode()
         stderr = p.stderr.decode()
-        print(f"Script of stage {stage} has been executed.\nStdout: {stdout}.\nStderr: {stderr}")
+
+        if stage is not None:
+            print(f"Script of stage {stage} has been executed.\nStdout: {stdout}.\nStderr: {stderr}")
+        else:
+            print(f"Custom script has been executed.\nStdout: {stdout}.\nStderr: {stderr}")
 
         if p.returncode != 0:
             errors.append({t: f"Error executing the script of stage {stage}."})
@@ -61,7 +69,7 @@ def _run_targets(projects_path, targets, stage, env):
         sys.exit(-1)
 
 
-def run(args):
+def run_stage(args):
     projects_path = args['path']
     stage = args['stage']
 
@@ -86,4 +94,32 @@ def run(args):
             sys.exit(-1)
 
     # Now run the stage for target projects
-    _run_targets(projects_path, targets, stage, args.get('env'))
+    _run_targets(projects_path, targets, args.get('env'), stage=stage)
+
+
+def run(args):
+    projects_path = args['path']
+    command = args['command']
+
+    if args['all_targets'] or args.get('targets'):
+        # target projects set manually
+        if args['all_targets']:
+            # _run_targets looks for demorepo.yml files: there is no need to filter by folders containing demorepo.yml
+            targets = os.listdir(projects_path)
+            print(f"All target projects are: {targets}")
+        else:
+            # strip each target to remove blank spaces, line breaks and other redundant chars
+            targets = [t.strip() for t in args['targets'].split()]
+            if args['recursive_deps']:
+                targets = append_dependencies(targets, args)
+                print(f"Target projects with dependencies are: {targets}")
+    else:
+        # Compute targets depending on the selected ci
+        try:
+            targets = ci.get_targets(args)
+        except Exception as e:
+            print(f"ERROR: Could not obtain target projects from ci-tool: {e}.")
+            sys.exit(-1)
+
+    # Now run the command for target projects
+    _run_targets(projects_path, targets, args.get('env'), command=command)
