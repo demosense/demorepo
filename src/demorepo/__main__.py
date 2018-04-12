@@ -86,7 +86,8 @@ if __name__ == '__main__':
                                                           'separated by blank spaces (use quotes around the string).')
     parser_run.add_argument('--all-targets', action='store_true',
                                   help='Set all the projects as target, and ignore --targets argument.')
-
+    parser_run.add_argument('--reverse-targets', action='store_true',
+                                  help='Reverse the dependency order for projects')
 
 
     parser_integration = subparsers.add_parser('integration')

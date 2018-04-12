@@ -11,6 +11,7 @@ def test_run_test_from_citool(setup):
         'path' : 'tests/projects',
         'stage': 'test',
         'targets': None,
+        'reverse_targets': False,
         'all_targets': False,
         'ci_tool': 'gitlab',
         'recursive_deps': False
@@ -31,6 +32,7 @@ def test_run_deploy_from_citool(setup):
         'env': ['DEPLOY_VAR=DEPLOY_VAR', 'DEPLOY_ENV_VAR=$DEPLOY_ENV_VAR_VALUE'],
         'targets': None,
         'all_targets': False,
+        'reverse_targets': False,
         'ci_tool': 'gitlab',
         'recursive_deps': False
     }
@@ -50,6 +52,7 @@ def test_run_p1(setup):
         'path': 'tests/projects',
         'stage': 'test',
         'targets': "p1",
+        'reverse_targets': False,
         'all_targets': False,
         'recursive_deps': False
     }
@@ -67,6 +70,7 @@ def test_run_p1_recursive(setup):
         'path': 'tests/projects',
         'stage': 'test',
         'targets': "p1",
+        'reverse_targets': False,
         'all_targets': False,
         'recursive_deps': True
     }
@@ -84,6 +88,7 @@ def test_run_p3_recursive(setup):
         'path': 'tests/projects',
         'stage': 'test',
         'targets': "p3",
+        'reverse_targets': False,
         'all_targets': False,
         'recursive_deps': True
     }
@@ -101,6 +106,7 @@ def test_run_p1_p3(setup):
         'path': 'tests/projects',
         'stage': 'test',
         'targets': "p1 p3",
+        'reverse_targets': False,
         'all_targets': False,
         'recursive_deps': False
     }
@@ -118,6 +124,7 @@ def test_run_p3(setup):
         'path': 'tests/projects',
         'stage': 'test',
         'targets': "p3",
+        'reverse_targets': False,
         'all_targets': False,
         'recursive_deps': False
     }
@@ -134,6 +141,7 @@ def test_run_all(setup):
         'working_mode': 'run-stage',
         'path': 'tests/projects',
         'stage': 'test',
+        'reverse_targets': False,
         'targets': "p2",
         'all_targets': True
     }
@@ -150,6 +158,7 @@ def test_run_command_all(setup):
         'working_mode': 'run',
         'path': 'tests/projects',
         'command': 'echo "Hello world"',
+        'reverse_targets': False,
         'targets': None,
         'all_targets': True
     }
@@ -168,6 +177,7 @@ def test_run_command_p1_p2(setup):
         'env': ['VARIABLE=Something'],
         'command': 'echo "$VARIABLE else"',
         'targets': "p1 p2",
+        'reverse_targets': False,
         'recursive_deps': False,
         'all_targets': False
     }
@@ -185,6 +195,7 @@ def test_run_p3_fails(setup):
         'path': 'tests/projects',
         'stage': 'failure',
         'targets': "p3",
+        'reverse_targets': False,
         'all_targets': False,
         'recursive_deps': False
     }
