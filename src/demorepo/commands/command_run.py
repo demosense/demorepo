@@ -6,7 +6,7 @@ from . import ci
 from .targets import append_dependencies
 
 
-def _run_targets(projects_path, targets, env, *, stage=None, command=None):
+def _run_targets(projects_path, targets, reverse_targets, env, *, stage=None, command=None):
     errors = []
 
     # apply the order to the targets list, just if config.yml exists in root path
@@ -19,6 +19,10 @@ def _run_targets(projects_path, targets, env, *, stage=None, command=None):
         not_ordered_t = [t for t in targets if t not in order_list]
         ordered_t = [t for t in order_list if t in targets]  # in this case, the order is the same as in order_list
         targets = ordered_t + not_ordered_t
+
+        if (reverse_targets):
+            targets.reverse()
+
         print(f"targets has been ordered: {targets}")
 
     for t in targets:
@@ -105,8 +109,10 @@ def run_stage(args):
             print(f"ERROR: Could not obtain target projects from ci-tool: {e}.")
             sys.exit(-1)
 
+    reverse_targets = args['reverse_targets']
+
     # Now run the stage for target projects
-    _run_targets(projects_path, targets, args.get('env'), stage=stage)
+    _run_targets(projects_path, targets, reverse_targets, args.get('env'), stage=stage)
 
 
 def run(args):
@@ -133,5 +139,7 @@ def run(args):
             print(f"ERROR: Could not obtain target projects from ci-tool: {e}.")
             sys.exit(-1)
 
+    reverse_targets = args['reverse_targets']
+
     # Now run the command for target projects
-    _run_targets(projects_path, targets, args.get('env'), command=command)
+    _run_targets(projects_path, targets, reverse_targets, args.get('env'), command=command)
