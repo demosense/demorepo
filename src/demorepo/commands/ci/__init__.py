@@ -8,11 +8,13 @@ __all__ = ['get_targets']
 
 def get_targets(args):
     # import ci module based on ci-tool parameter. Options: gitlab
-    ci_module = importlib.import_module(name=f".{args['ci_tool']}", package=__name__)
+    ci_module = importlib.import_module(
+        name=f".{args['ci_tool']}", package=__name__)
 
     # Clone the actual environ (contains required env vars) and append new ones for the child process
     child_environ = os.environ.copy()
-    child_environ["CI_SERVER_URL"] = args.get('ci-url') or ci_module.defaults["CI_SERVER_URL"]
+    child_environ["CI_SERVER_URL"] = args.get(
+        'ci-url') or ci_module.defaults["CI_SERVER_URL"]
     child_environ["PROJECTS_PATH"] = args['path']
 
     # get the target projects based on differences with respect to last green commit

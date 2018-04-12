@@ -5,6 +5,24 @@ import glob
 __all__ = ['filter_targets', 'append_dependencies']
 
 
+def get_targets(args):
+    projects_path = args['path']
+
+    if args.get('targets'):
+        # target projects set manually
+        # strip each target to remove blank spaces, line breaks and other redundant chars
+        targets = [t.strip() for t in args['targets'].split()]
+        if args['recursive_deps']:
+            targets = append_dependencies(targets, args)
+            print(f"Target projects with dependencies are: {targets}")
+    else:
+        # _run_targets looks for demorepo.yml files: there is no need to filter by folders containing demorepo.yml
+        targets = os.listdir(projects_path)
+        print(f"All target projects are: {targets}")
+
+    return targets
+
+
 def filter_targets(targets, args):
     """
     Filter the projects in targets (names of modified projects) which has been deleted or does not contain the
@@ -27,12 +45,12 @@ def append_dependencies(targets, args):
     :return: The projects which has been modified from last green commit of have modified dependencies
     """
     # Get the all the project paths (which are folders). *Only the names*.
-    all_project_names = [f for f in os.listdir(args['path']) if os.path.isdir(os.path.join(args['path'], f))]
+    all_project_names = [f for f in os.listdir(
+        args['path']) if os.path.isdir(os.path.join(args['path'], f))]
 
     # Just extend the python projects, where a requirements file is inside
     python_project_names = [f for f in all_project_names
                             if len(glob.glob(os.path.join(args['path'], f, 'requirements*'))) > 0]
-
 
     # Process the dict of dependents (projects which are dependent of a project; inverse of requirements)
     dependents = dict()
@@ -42,9 +60,11 @@ def append_dependencies(targets, args):
         # Match exactly with "git+file://../$sub1". If using other branch i.e.: "...$sub1@release/1.0",
         # the modification of $sub1 (in the actual commit) does not affect to the $sub2 project
         # (requirements refers to other commit code)
-        requirements_line = "../" + sub1.strip()  # strip to remove any possible whitespaces or line breaks
+        # strip to remove any possible whitespaces or line breaks
+        requirements_line = "../" + sub1.strip()
         for sub2 in python_project_names:
-            requirements_paths = glob.glob(f"{os.path.join(args['path'], sub2)}/requirements*")
+            requirements_paths = glob.glob(
+                f"{os.path.join(args['path'], sub2)}/requirements*")
 
             for req_path in requirements_paths:
                 with open(req_path) as f:
