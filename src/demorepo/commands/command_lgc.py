@@ -13,10 +13,9 @@ def lgc(args):
         if args['recursive_deps']:
             targets = append_dependencies(targets, args)
 
-        # print(f"Target projects with dependencies are: {targets}")
+        print(f"Target projects with dependencies are: {targets}")
 
         # Print output projects to stdout
-        print(targets)
         print(" ".joint(targets))
 
     except Exception as e:
