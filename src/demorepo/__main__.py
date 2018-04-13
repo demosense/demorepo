@@ -127,12 +127,6 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    # try:
-    #     Repo(os.getcwd())
-    # except Exception as e:
-    #     parser.error(
-    #         f"ERROR: You must be in the root path of a git repository: {e}.")
-
     if args['working_mode'] == 'init':
         commands.init(args)
     if args['working_mode'] == 'info':
