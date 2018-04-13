@@ -16,6 +16,7 @@ def lgc(args):
         # print(f"Target projects with dependencies are: {targets}")
 
         # Print output projects to stdout
+        print(targets)
         print(" ".joint(targets))
 
     except Exception as e:
