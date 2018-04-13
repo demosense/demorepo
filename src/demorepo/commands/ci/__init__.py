@@ -26,7 +26,6 @@ def get_targets(args):
     targets = filter_targets(targets, args)
     # print(f"Filtered target projects are: {targets}")
 
-    # If argument recursive_deps is True, we include in the targets the dependencies of the modified projects (targets)
     # NOTE: Actually this is only implemented for Python projects, based on requirements file dependencies.
     # Python dependencies process:
     # This is a recursive process which checks any requirements.* file inside each project.
