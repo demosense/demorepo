@@ -10,9 +10,6 @@ def lgc(args):
     try:
         targets = ci.get_targets(args)
 
-        if args['recursive_deps']:
-            targets = append_dependencies(targets, args)
-
         # print(f"Target projects with dependencies are: {targets}")
 
         # Print output projects to stdout
