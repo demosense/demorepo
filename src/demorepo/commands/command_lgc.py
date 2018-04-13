@@ -13,12 +13,12 @@ def lgc(args):
         if args['recursive_deps']:
             targets = append_dependencies(targets, args)
 
-        print(f"Target projects with dependencies are: {targets}")
+        # print(f"Target projects with dependencies are: {targets}")
 
         # Print output projects to stdout
         print(" ".joint(targets))
 
     except Exception as e:
-        # print(
-        #     f"ERROR: Could not obtain target projects from ci-tool: {e}.")
+        print(
+            f"ERROR: Could not obtain target projects from ci-tool: {e}.")
         sys.exit(-1)
