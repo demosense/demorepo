@@ -26,15 +26,7 @@ def get_targets(args):
     targets = filter_targets(targets, args)
     # print(f"Filtered target projects are: {targets}")
 
-    # NOTE: Actually this is only implemented for Python projects, based on requirements file dependencies.
-    # Python dependencies process:
-    # This is a recursive process which checks any requirements.* file inside each project.
-
-    if args['recursive_deps']:
-        targets = append_dependencies(targets, args)
-        # print(f"Target projects with dependencies are: {targets}")
-
     # if len(targets) == 0:
-        # print("No subprojects have been modified!")
+    # print("No subprojects have been modified!")
 
     return targets
