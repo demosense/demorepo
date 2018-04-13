@@ -1,6 +1,6 @@
 import os
 import importlib
-from ..targets import filter_targets, append_dependencies
+from demorepo.commands.targets import filter_targets, append_dependencies
 
 
 __all__ = ['get_targets']
@@ -24,7 +24,7 @@ def get_targets(args):
     # demorepo.yml file inside. Also, it might contain even deleted subprojects (are git differences!).
     # Remove them if they do not exist.
     targets = filter_targets(targets, args)
-    print(f"Filtered target projects are: {targets}")
+    # print(f"Filtered target projects are: {targets}")
 
     # If argument recursive_deps is True, we include in the targets the dependencies of the modified projects (targets)
     # NOTE: Actually this is only implemented for Python projects, based on requirements file dependencies.
@@ -33,9 +33,9 @@ def get_targets(args):
 
     if args['recursive_deps']:
         targets = append_dependencies(targets, args)
-        print(f"Target projects with dependencies are: {targets}")
+        # print(f"Target projects with dependencies are: {targets}")
 
-    if len(targets) == 0:
-        print("No subprojects have been modified!")
+    # if len(targets) == 0:
+        # print("No subprojects have been modified!")
 
     return targets

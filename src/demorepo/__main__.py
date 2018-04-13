@@ -58,20 +58,17 @@ if __name__ == '__main__':
                                       help='Dependency order of projects. Not specified projects have no dependencies.')
 
     #
-    # demorepo ci
-    parser_ci = subparsers.add_parser('ci',
-                                      description='Return the project that have changed according to the configured '
-                                      'ci tool in the config file or by option --ci-tool')
+    # demorepo lgc
+    parser_lgc = subparsers.add_parser('lgc',
+                                       description='Return the projects that have changed according to the configured '
+                                       'ci tool in the config file or by option --ci-tool')
 
-    parser_ci.add_argument('-p', '--path', required=True,
-                           help='Path to the projects folder.')
-    parser_ci.add_argument('--ci-tool', default='gitlab', choices=['gitlab'],
-                           help='The specific CI tool (e.g.: gitlab, Circle-CI, ....)')
-    parser_ci.add_argument(
+    parser_lgc.add_argument('-p', '--path', required=True,
+                            help='Path to the projects folder.')
+    parser_lgc.add_argument('--ci-tool', default='gitlab', choices=['gitlab'],
+                            help='The specific CI tool (e.g.: gitlab, Circle-CI, ....)')
+    parser_lgc.add_argument(
         '--ci-url', help='the URL to the CI Server. By default uses the general public URL.')
-    parser_ci.add_argument('-r', '--recursive-deps', action='store_true',
-                           help='Find projects recursively which depends on target projects and include them as '
-                           'target projects too.')
 
     #
     # demorepo run-stage
@@ -140,8 +137,8 @@ if __name__ == '__main__':
         commands.init(args)
     if args['working_mode'] == 'info':
         commands.info(args)
-    if args['working_mode'] == 'ci':
-        commands.ci(args)
+    if args['working_mode'] == 'lgc':
+        commands.lgc(args)
     elif args['working_mode'] == 'run':
         commands.run(args)
     elif args['working_mode'] == 'run-stage':

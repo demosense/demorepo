@@ -7,6 +7,6 @@ from .command_info import info
 from .command_init import init
 from .command_run import run, run_stage
 from .command_integration import integration
-from .command_ci import ci
+from .command_lgc import lgc
 
-__all__ = ['info', 'init', 'run', 'run_stage', 'integration', 'ci']
+__all__ = ['info', 'init', 'run', 'run_stage', 'integration', 'lgc']
