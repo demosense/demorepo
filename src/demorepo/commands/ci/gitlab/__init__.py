@@ -28,7 +28,8 @@ def get_target_projects(env_vars):
         # get last green commit sha in this branch
         url = f"{env_vars['CI_SERVER_URL']}/api/v4/projects/{env_vars['CI_PROJECT_ID']}/pipelines"
         vars_get = f"?status=success&ref={env_vars['CI_COMMIT_REF_NAME']}&per_page=1"
-        response = requests.get(url+'/'+vars_get, headers={"PRIVATE-TOKEN": env_vars['GITLAB_API_KEY']}).json()
+        response = requests.get(
+            url+'/'+vars_get, headers={"PRIVATE-TOKEN": env_vars['GITLAB_API_KEY']}).json()
         if len(response) == 0:
             # No green pipelines on this branch. First commit in this pipeline branch or just sequence of red commits.
             # In any case, we first obtain the initial branch commit, represented as the last commit in the branch in
@@ -41,20 +42,23 @@ def get_target_projects(env_vars):
                 parent_branch = "origin/develop"
 
             # Commits in both this branch and in develop. Get the newer one.
-            last_green_commit = repo.merge_base(parent_branch, env_vars['CI_COMMIT_SHA'])[0].hexsha
+            last_green_commit = repo.merge_base(
+                parent_branch, env_vars['CI_COMMIT_SHA'])[0].hexsha
 
-            print(f"Using as last green commit the last commit in common between parent branch {parent_branch} "
-                  f"and HEAD: {last_green_commit}")
+            # print(f"Using as last green commit the last commit in common between parent branch {parent_branch} "
+            #             f"and HEAD: {last_green_commit}")
         else:
             last_green_commit = response[0]["sha"].strip()
 
-        print(f"sha of last green commit in the branch {git_branch} is {last_green_commit}")
+        # print(
+        #     f"sha of last green commit in the branch {git_branch} is {last_green_commit}")
 
         # Get git differences between index and last green commit
         targets = repo.git.diff(last_green_commit, name_only=True).split('\n')
 
         s = set()
-        nchars_projects_path = len(env_vars['PROJECTS_PATH'])+1 # Include the '/' to compare and to remove
+        # Include the '/' to compare and to remove
+        nchars_projects_path = len(env_vars['PROJECTS_PATH'])+1
         for t in targets:
             # Check that the modified path starts from the projects path
             if env_vars['PROJECTS_PATH']+'/' == t[:nchars_projects_path]:
@@ -66,6 +70,6 @@ def get_target_projects(env_vars):
                 # Add it into a set (a way to get unique target names)
                 s.add(t)
         targets = list(s)
-        print(f"Unprocessed target folder names: {targets}")
+        # print(f"Unprocessed target folder names: {targets}")
 
     return targets
