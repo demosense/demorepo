@@ -9,9 +9,9 @@ def lgc(args):
 
     # Compute targets depending on the selected ci
     try:
-        lgc = ci.get_lgc(ci_tool, ci_url)
+        last_green_commit = ci.get_lgc(ci_tool, ci_url)
 
-        return lgc
+        print(last_green_commit)
 
     except Exception as e:
         print("ERROR: Could not obtain lgc from ci-tool: {}.".format(e))

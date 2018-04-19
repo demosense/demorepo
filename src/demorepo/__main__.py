@@ -127,11 +127,11 @@ if __name__ == '__main__':
 
     if args['working_mode'] == 'init':
         commands.init(args)
-    if args['working_mode'] == 'info':
+    elif args['working_mode'] == 'info':
         commands.info(args)
-    if args['working_mode'] == 'lgc':
+    elif args['working_mode'] == 'lgc':
         commands.lgc(args)
-    if args['working_mode'] == 'diff':
+    elif args['working_mode'] == 'diff':
         commands.diff(args)
     elif args['working_mode'] == 'run':
         commands.run(args)
