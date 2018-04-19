@@ -22,8 +22,10 @@ def get_lgc(env_vars):
     repo = git.Repo(os.getcwd())
 
     # get last green commit sha in this branch
-    url = f"{env_vars['CI_SERVER_URL']}/api/v4/projects/{env_vars['CI_PROJECT_ID']}/pipelines"
-    vars_get = f"?status=success&ref={env_vars['CI_COMMIT_REF_NAME']}&per_page=1"
+    url = "{}/api/v4/projects/{}/pipelines".format(
+        env_vars['CI_SERVER_URL'], env_vars['CI_PROJECT_ID'])
+    vars_get = "?status=success&ref={}&per_page=1".format(
+        env_vars['CI_COMMIT_REF_NAME'])
     response = requests.get(
         url+'/'+vars_get, headers={"PRIVATE-TOKEN": env_vars['GITLAB_API_KEY']}).json()
     if len(response) == 0:
@@ -41,12 +43,12 @@ def get_lgc(env_vars):
         last_green_commit = repo.merge_base(
             parent_branch, env_vars['CI_COMMIT_SHA'])[0].hexsha
 
-        # print(f"Using as last green commit the last commit in common between parent branch {parent_branch} "
-        #             f"and HEAD: {last_green_commit}")
+        # print("Using as last green commit the last commit in common between parent branch {} ".format(parent_branch)
+        #             "and HEAD: {}".format(last_green_commit))
     else:
         last_green_commit = response[0]["sha"].strip()
 
     # print(
-    #     f"sha of last green commit in the branch {git_branch} is {last_green_commit}")
+    #     "sha of last green commit in the branch {} is {}".format(git_branch, last_green_commit))
 
     return last_green_commit
