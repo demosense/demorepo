@@ -1,5 +1,2 @@
-test:
-    script: ./test.sh 
-
 deploy: 
     script: ./deploy.sh $(cat requirements.txt)

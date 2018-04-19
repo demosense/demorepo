@@ -1,6 +1,7 @@
 import subprocess
 import os
 import pytest
+from contextlib import contextmanager
 
 
 class MockGit:
@@ -41,5 +42,20 @@ def mock_sys_exit(*args, **kwargs):
 @pytest.fixture()
 def setup(monkeypatch):
     actual_path = os.getcwd()
-    monkeypatch.setattr(os, 'getcwd', lambda: os.path.join(actual_path, 'tests'))
+    monkeypatch.setattr(
+        os, 'getcwd', lambda: os.path.join(actual_path, 'tests'))
     yield monkeypatch
+
+
+def raises(error):
+    """Wrapper around pytest.raises to support None."""
+    if error:
+        return pytest.raises(error)
+    else:
+        @contextmanager
+        def not_raises():
+            try:
+                yield
+            except Exception as e:
+                raise e
+        return not_raises()

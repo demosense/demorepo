@@ -8,5 +8,6 @@ from .command_init import init
 from .command_run import run, run_stage
 from .command_integration import integration
 from .command_lgc import lgc
+from .command_diff import diff
 
-__all__ = ['info', 'init', 'run', 'run_stage', 'integration', 'lgc']
+__all__ = ['info', 'init', 'run', 'run_stage', 'integration', 'lgc', 'diff']

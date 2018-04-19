@@ -1,6 +1,4 @@
 import argparse
-import os
-from git import Repo
 import demorepo.commands as commands
 
 
@@ -60,15 +58,20 @@ if __name__ == '__main__':
     #
     # demorepo lgc
     parser_lgc = subparsers.add_parser('lgc',
-                                       description='Return the projects that have changed according to the configured '
+                                       description='Return the last green commit according to the configured '
                                        'ci tool in the config file or by option --ci-tool')
 
-    parser_lgc.add_argument('-p', '--path', required=True,
-                            help='Path to the projects folder.')
     parser_lgc.add_argument('--ci-tool', default='gitlab', choices=['gitlab'],
                             help='The specific CI tool (e.g.: gitlab, Circle-CI, ....)')
     parser_lgc.add_argument(
         '--ci-url', help='the URL to the CI Server. By default uses the general public URL.')
+
+    #
+    # demorepo diff
+    parser_diff = subparsers.add_parser('diff',
+                                        description='Return the projects that have changed according to the provided sha')
+    parser_diff.add_argument(
+        '-s', '--sha', required=True, help='SHA of the commit to compare with')
 
     #
     # demorepo run-stage
@@ -77,9 +80,6 @@ if __name__ == '__main__':
                                              '--all-targets are not provided, it will check the differences from '
                                              'last green commit (using the --ci-tool argument) and set them '
                                              'as target projects.')
-
-    parser_run_stage.add_argument(
-        '-p', '--path', required=True, help='Path to the projects folder.')
     parser_run_stage.add_argument(
         '-s', '--stage', required=True, help='Stage name in the project demorepo.yml')
     parser_run_stage.add_argument('-e', '--env', action='append', help='Optional variables passed to the target stage script.'
@@ -100,8 +100,6 @@ if __name__ == '__main__':
                                        '--all-targets are not provided, it will check the differences from '
                                        'last green commit (using the --ci-tool argument) and set them '
                                        'as target projects.')
-    parser_run.add_argument('-p', '--path', required=True,
-                            help='Path to the projects folder.')
     parser_run.add_argument('-c', '--command', required=True,
                             help='The shell command to execute.')
     parser_run.add_argument('-e', '--env', action='append',
@@ -133,6 +131,8 @@ if __name__ == '__main__':
         commands.info(args)
     if args['working_mode'] == 'lgc':
         commands.lgc(args)
+    if args['working_mode'] == 'diff':
+        commands.diff(args)
     elif args['working_mode'] == 'run':
         commands.run(args)
     elif args['working_mode'] == 'run-stage':

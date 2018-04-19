@@ -1,32 +1,37 @@
-import os
+import git
 import importlib
-from demorepo.commands.targets import filter_targets, append_dependencies
+import os
+
+__all__ = ['get_lgc', 'get_diff']
 
 
-__all__ = ['get_targets']
+def get_lgc(ci_tool, ci_url):
 
-
-def get_targets(args):
     # import ci module based on ci-tool parameter. Options: gitlab
     ci_module = importlib.import_module(
-        name=f".{args['ci_tool']}", package=__name__)
+        name=".{}".format(ci_tool), package=__name__)
 
     # Clone the actual environ (contains required env vars) and append new ones for the child process
     child_environ = os.environ.copy()
-    child_environ["CI_SERVER_URL"] = args.get(
-        'ci-url') or ci_module.defaults["CI_SERVER_URL"]
-    child_environ["PROJECTS_PATH"] = args['path']
+    child_environ["CI_SERVER_URL"] = ci_url or ci_module.defaults["CI_SERVER_URL"]
 
     # get the target projects based on differences with respect to last green commit
-    targets = ci_module.get_target_projects(child_environ)
+    return ci_module.get_lgc(child_environ)
 
-    # TARGET_SUBPROJECTS might contain residual folders or files. A project should be a folder with the
-    # demorepo.yml file inside. Also, it might contain even deleted subprojects (are git differences!).
-    # Remove them if they do not exist.
-    targets = filter_targets(targets, args)
-    # print(f"Filtered target projects are: {targets}")
 
-    # if len(targets) == 0:
-    # print("No subprojects have been modified!")
+def get_diff(paths, sha):
+
+    # the actual python path is the root of a git project
+    repo = git.Repo(os.getcwd())
+
+    # Get git differences between index and last green commit
+    diffs = repo.git.diff(sha, name_only=True).split('\n')
+
+    targets = []
+    # Include the '/' to compare and to remove
+    for p, path in paths.items():
+        len_path = len(path)
+        if any(path == d[:len_path] for d in diffs):
+            targets.append(p)
 
     return targets

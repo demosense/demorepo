@@ -1,0 +1,32 @@
+
+test-p2:
+  script: ./test.sh
+  projects:
+    - p2
+
+test-all:
+  script: ./test.sh
+  projects:
+    - p1
+    - p2
+
+test-all-p3-fails:
+  script: ./test.sh
+  projects:
+    - p1
+    - p2
+    - p3
+
+test-all-invalid:
+  script: ./test.sh
+  projects:
+    - p1
+    - p2
+    - p3
+    - p4
+
+test-all-local-p1:
+  script: ./deploy.sh
+  projects:
+    - p1
+    - p2

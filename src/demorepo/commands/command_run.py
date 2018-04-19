@@ -1,60 +1,93 @@
-import yaml
 import os
-import sys
 import subprocess
-from .targets import get_targets, append_dependencies
+import sys
+import yaml
+
+from demorepo import config
+from .targets import get_targets
 
 
-def _run_targets(projects_path, targets, reverse_targets, env, *, stage=None, command=None):
-    errors = []
-    # apply the order to the targets list, just if config.yml exists in root path
-    config_path = os.path.join(os.getcwd(), 'config.yml')
-    if os.path.exists(config_path):
-        with open(config_path) as f:
-            config = yaml.load(f.read())
-        # get ordered list from projects field. If do not exists, use an empty list
-        order_list = config["projects"].get("order", [])
-        not_ordered_t = [t for t in targets if t not in order_list]
-        # in this case, the order is the same as in order_list
-        ordered_t = [t for t in order_list if t in targets]
-        targets = ordered_t + not_ordered_t
+def _get_scripts(projects, paths, stage, targets):
 
-        if (reverse_targets):
-            targets.reverse()
+    # Accumulator
+    scripts = {}
 
-        print(f"targets has been ordered: {targets}")
+    # Load stages from global demorepo
+    # Parse global file
+    global_stages_path = os.path.join(os.getcwd(), 'demorepo.yml')
+    if os.path.exists(global_stages_path):
+        with open(global_stages_path) as f:
+            global_config = yaml.load(f.read())
 
+            # If the stage is defined in the global stage, capture the projects
+            if stage in global_config:
+                script = global_config[stage]['script']
+                included_projects = global_config[stage]['projects']
+
+                # Check if projects are defined
+                for p in [p for p in included_projects if p not in projects]:
+                    raise Exception(
+                        "Error: Unrecognized project {} defined for stage {} in global demorepo.yml".format(p, stage))
+
+                # Assign the script for each valid target
+                scripts = {
+                    p: script for p in included_projects if p in targets}
+
+            else:
+                print(f"Stage {stage} not defined in global demorepo.yml")
+    else:
+        print(f"Global demorepo.yml not found")
+
+    # Load stages from local demorepo
     for t in targets:
-        if not os.path.exists(os.path.join(projects_path, t, 'demorepo.yml')):
-            print(f"demorepo.yml not found in target {t}. Skipping it.")
+        local_stages_path = os.path.join(
+            os.getcwd(), paths[t], 'demorepo.yml')
+        if not os.path.exists(local_stages_path):
             continue
 
-        if stage is not None:
-            with open(os.path.join(projects_path, t, 'demorepo.yml')) as f:
-                demorepo_yml = yaml.load(f.read())
+        with open(local_stages_path) as f:
+            local_config = yaml.load(f.read())
 
-            if demorepo_yml is None or stage not in demorepo_yml:
-                print(
-                    f"stage {stage} not found in demorepo.yml of target {t}. Skipping it.")
-                continue
+        if stage in local_config:
+            script = local_config[stage]['script']
+            if t in scripts:
+                print(f"Overriding with local stage for target {t}")
 
-            script = demorepo_yml[stage]['script']
-        else:
-            script = command
+            scripts[t] = script
 
-        child_environ = os.environ.copy()
-        if env:
-            for varset in env:
-                var_name, var_value = varset.split("=")
-                var_name = var_name.strip()
-                var_value = var_value.strip()
-                if var_value[0] == '$':
-                    var_value = subprocess.run(f'echo {var_value}', shell=True, env=child_environ,
-                                               stdout=subprocess.PIPE).stdout.decode().strip()
-                child_environ[var_name] = var_value
+    return scripts
 
-        p = subprocess.run(script, shell=True, env=child_environ, cwd=os.path.join(projects_path, t),
+
+def _get_child_environ(env):
+    child_environ = os.environ.copy()
+    if env:
+        for varset in env:
+            var_name, var_value = varset.split("=")
+            var_name = var_name.strip()
+            var_value = var_value.strip()
+            if var_value[0] == '$':
+                var_value = subprocess.run(f'echo {var_value}', shell=True, env=child_environ,
+                                           stdout=subprocess.PIPE).stdout.decode().strip()
+            child_environ[var_name] = var_value
+    return child_environ
+
+
+def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
+    errors = []
+
+    # Get scripts from stage scripts or paste the command
+    if stage:
+        scripts = _get_scripts(projects, paths, stage, targets)
+    else:
+        scripts = {t: command for t in targets}
+
+    child_environ = _get_child_environ(env)
+
+    for t, script in scripts.items():
+
+        p = subprocess.run(script, shell=True, env=child_environ, cwd=os.path.join(os.getcwd(), paths[t]),
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
         stdout = p.stdout.decode()
         stderr = p.stderr.decode()
 
@@ -86,21 +119,28 @@ def _run_targets(projects_path, targets, reverse_targets, env, *, stage=None, co
 
 
 def run_stage(args):
-    projects_path = args['path']
     stage = args['stage']
-    targets = get_targets(args)
+    targets = args.get('targets', None)
     reverse_targets = args['reverse_targets']
+    env = args.get('env')
 
-    _run_targets(projects_path, targets, reverse_targets,
-                 args.get('env'), stage=stage)
+    projects = config.get_projects()
+    dependencies = config.get_projects_dependencies()
+    paths = config.get_projects_paths()
+
+    targets = get_targets(projects, dependencies, targets, reverse_targets)
+    _run_targets(projects, paths, targets, env, stage=stage)
 
 
 def run(args):
-    projects_path = args['path']
     command = args['command']
-    targets = get_targets(args)
+    targets = args.get('targets', None)
     reverse_targets = args['reverse_targets']
+    env = args.get('env')
 
-    # Now run the command for target projects
-    _run_targets(projects_path, targets, reverse_targets,
-                 args.get('env'), command=command)
+    projects = config.get_projects()
+    dependencies = config.get_projects_dependencies()
+    paths = config.get_projects_paths()
+
+    targets = get_targets(projects, dependencies, targets, reverse_targets)
+    _run_targets(projects, paths, targets, env, command=command)
