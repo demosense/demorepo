@@ -21,7 +21,7 @@ def info(args):
     elif args['section'] == 'projects':
         _projects(config["projects"], args)
     else:
-        print(f"Section option '{args['section']}' not supported.")
+        print("Section option '{}' not supported.".format(args['section']))
 
 
 def _demorepo(config, args):

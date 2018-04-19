@@ -14,6 +14,5 @@ def lgc(args):
         return lgc
 
     except Exception as e:
-        print(
-            f"ERROR: Could not obtain lgc from ci-tool: {e}.")
+        print("ERROR: Could not obtain lgc from ci-tool: {}.".format(e))
         sys.exit(-1)

@@ -34,9 +34,9 @@ def _get_scripts(projects, paths, stage, targets):
                     p: script for p in included_projects if p in targets}
 
             else:
-                print(f"Stage {stage} not defined in global demorepo.yml")
+                print("Stage {} not defined in global demorepo.yml".format(stage))
     else:
-        print(f"Global demorepo.yml not found")
+        print("Global demorepo.yml not found")
 
     # Load stages from local demorepo
     for t in targets:
@@ -51,7 +51,7 @@ def _get_scripts(projects, paths, stage, targets):
         if stage in local_config:
             script = local_config[stage]['script']
             if t in scripts:
-                print(f"Overriding with local stage for target {t}")
+                print("Overriding with local stage for target {}".format(t))
 
             scripts[t] = script
 
@@ -66,7 +66,7 @@ def _get_child_environ(env):
             var_name = var_name.strip()
             var_value = var_value.strip()
             if var_value[0] == '$':
-                var_value = subprocess.run(f'echo {var_value}', shell=True, env=child_environ,
+                var_value = subprocess.run('echo {}'.format(var_value), shell=True, env=child_environ,
                                            stdout=subprocess.PIPE).stdout.decode().strip()
             child_environ[var_name] = var_value
     return child_environ
@@ -92,7 +92,7 @@ def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
         stderr = p.stderr.decode()
 
         if stage is not None:
-            print(f"Script of stage {stage} has been executed.")
+            print("Script of stage {} has been executed.".format(stage))
             print("Stdout:")
             print("=" * 20)
             print(stdout)
@@ -109,7 +109,8 @@ def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
             print(stderr)
 
         if p.returncode != 0:
-            errors.append({t: f"Error executing the script of stage {stage}."})
+            errors.append(
+                {t: "Error executing the script of stage {}.".format(stage)})
 
     if len(errors) > 0:
         print(
