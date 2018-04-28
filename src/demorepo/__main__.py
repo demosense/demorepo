@@ -76,18 +76,15 @@ if __name__ == '__main__':
     #
     # demorepo run-stage
     parser_run_stage = subparsers.add_parser('run-stage',
-                                             description='Run the stages for the target projects. If --targets and '
-                                             '--all-targets are not provided, it will check the differences from '
-                                             'last green commit (using the --ci-tool argument) and set them '
-                                             'as target projects.')
+                                             description='Run the specified stage in the global and local config files.')
     parser_run_stage.add_argument(
         '-s', '--stage', required=True, help='Stage name in the project demorepo.yml')
     parser_run_stage.add_argument('-e', '--env', action='append', help='Optional variables passed to the target stage script.'
                                   ' The format is VAR_NAME=VAR_VALUE. '
                                   'Multiple env vars can be specified.')
-    parser_run_stage.add_argument('-r', '--recursive-deps', action='store_true',
-                                  help='Find projects recursively which depends on target projects and include them as '
-                                  'target projects too.')
+    # parser_run_stage.add_argument('-r', '--recursive-deps', action='store_true',
+    #                               help='Find projects recursively which depends on target projects and include them as '
+    #                               'target projects too.')
     parser_run_stage.add_argument('-t', '--targets', help='A list of target project names to run the provided stage, '
                                   'separated by blank spaces (use quotes around the string).')
     parser_run_stage.add_argument('--reverse-targets', action='store_true',
@@ -96,21 +93,18 @@ if __name__ == '__main__':
     #
     # demorepo run
     parser_run = subparsers.add_parser('run',
-                                       description='Execute a shell command for the target projects. If --targets and '
-                                       '--all-targets are not provided, it will check the differences from '
-                                       'last green commit (using the --ci-tool argument) and set them '
-                                       'as target projects.')
+                                       description='Execute a shell command for all projects.')
     parser_run.add_argument('-c', '--command', required=True,
                             help='The shell command to execute.')
+    parser_run.add_argument('-t', '--targets', help='A list of target project names to run the provided stage, '
+                            'separated by blank spaces (use quotes around the string).')
     parser_run.add_argument('-e', '--env', action='append',
                                   help='Optional variables passed to the target stage script.'
                                        ' The format is VAR_NAME=VAR_VALUE. '
                                        'Multiple env vars can be specified.')
-    parser_run.add_argument('-r', '--recursive-deps', action='store_true',
-                                  help='Find projects recursively which depends on target projects and include them as '
-                                       'target projects too.')
-    parser_run.add_argument('-t', '--targets', help='A list of target project names to run the provided stage, '
-                            'separated by blank spaces (use quotes around the string).')
+    # parser_run.add_argument('-r', '--recursive-deps', action='store_true',
+    #                               help='Find projects recursively which depends on target projects and include them as '
+    #                                    'target projects too.')
     parser_run.add_argument('--reverse-targets', action='store_true',
                             help='Reverse the dependency order for projects')
 
