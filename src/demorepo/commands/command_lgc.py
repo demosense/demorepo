@@ -1,5 +1,7 @@
 import sys
+
 from . import ci
+from demorepo import logger
 
 
 def lgc(args):
@@ -14,5 +16,5 @@ def lgc(args):
         print(last_green_commit)
 
     except Exception as e:
-        print("ERROR: Could not obtain lgc from ci-tool: {}.".format(e))
+        logger.error("ERROR: Could not obtain lgc from ci-tool: {}".format(e))
         sys.exit(-1)

@@ -1,3 +1,5 @@
+from demorepo import logger
+
 
 __all__ = ['get_targets']
 
@@ -26,7 +28,7 @@ def get_targets(targets, dependencies, targets_filter, reverse_targets=False, re
     if (reverse_targets):
         targets.reverse()
 
-    print("Target projects are: {}".format(targets))
+    logger.info("Target projects are: {}".format(targets))
 
     return targets
 

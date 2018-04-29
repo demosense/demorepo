@@ -1,5 +1,7 @@
 import argparse
-import demorepo.commands as commands
+
+from demorepo import commands
+from demorepo import logger
 
 
 __package__ = "demorepo"
@@ -133,7 +135,7 @@ def main():
     elif args['working_mode'] == 'integration':
         commands.integration(args)
     else:
-        print(parser.parse_args('-h'))
+        parser.print_help()
 
 
 
