@@ -92,9 +92,8 @@ def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
         else:
             logger.info("Running custom script for target {}...".format(t))
 
-
         p = subprocess.Popen(script, shell=True, env=child_environ, cwd=os.path.join(os.getcwd(), paths[t]),
-                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # log the stdout as a stream in real-time (by lines)
         logger.info('')
@@ -126,7 +125,7 @@ def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
         sys.exit(-1)
 
 
-def run_stage(args):
+def stage(args):
     stage = args['stage']
     targets = args.get('targets', None)
     reverse_targets = args['reverse_targets']
