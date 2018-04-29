@@ -145,7 +145,7 @@ The `requirements.txt` file contains the python3 dependencies: `requests`, `GitP
 
 ## Running unit tests
 
-In the src folder (where the setup.cgf is placed) run:
+In the src folder (where the setup.cfg is placed) run:
 
 ```
 python3 -m pytest -v .
