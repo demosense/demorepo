@@ -7,7 +7,7 @@ from demorepo import parser
 defaults = dict(silent=False, log_path=None, working_mode=None)
 lgc_defaults = dict(ci_tool='gitlab', ci_url=None)
 run_defaults = dict(targets=None, env=None, reverse_targets=False)
-run_stage_defaults = dict(targets=None, env=None, reverse_targets=False)
+stage_defaults = dict(targets=None, env=None, reverse_targets=False)
 
 
 @pytest.mark.parametrize("argv,expected,exit", [
@@ -72,28 +72,28 @@ run_stage_defaults = dict(targets=None, env=None, reverse_targets=False)
         dict(defaults, working_mode='run', command='ls', targets='target1', reverse_targets=True, env=['cosa=1234']),
         None,
     ),
-    # run stage required A
+    # stage required A
     (
-        ['demorepo', 'run-stage', '-s', 'deploy'],
-        dict(defaults, working_mode='run-stage', **run_stage_defaults, stage='deploy'),
+        ['demorepo', 'stage', '-s', 'deploy'],
+        dict(defaults, working_mode='stage', **stage_defaults, stage='deploy'),
         None,
     ),
-    # run stage required B
+    # stage required B
     (
-        ['demorepo', 'run-stage', '--stage', 'deploy'],
-        dict(defaults, working_mode='run-stage', **run_stage_defaults, stage='deploy'),
+        ['demorepo', 'stage', '--stage', 'deploy'],
+        dict(defaults, working_mode='stage', **stage_defaults, stage='deploy'),
         None,
     ),
-    # run stage required fail
+    # stage required fail
     (
-        ['demorepo', 'run-stage'],
-        dict(defaults, working_mode='run-stage', **run_stage_defaults),
+        ['demorepo', 'stage'],
+        dict(defaults, working_mode='stage', **stage_defaults),
         SystemExit,
     ),
-    # run stage opts
+    # stage opts
     (
-        ['demorepo', 'run-stage', '--stage', 'deploy', '--targets', 'target1', '--reverse-targets', '--env', 'cosa=1234'],
-        dict(defaults, working_mode='run-stage', stage='deploy',
+        ['demorepo', 'stage', '--stage', 'deploy', '--targets', 'target1', '--reverse-targets', '--env', 'cosa=1234'],
+        dict(defaults, working_mode='stage', stage='deploy',
              targets='target1', reverse_targets=True, env=['cosa=1234']),
         None,
     ),

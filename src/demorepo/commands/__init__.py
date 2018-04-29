@@ -2,7 +2,7 @@ import os
 
 from demorepo import logger
 from demorepo import parser
-from .command_run import run, run_stage
+from .command_run import run, stage
 from .command_lgc import lgc
 from .command_diff import diff
 
@@ -22,7 +22,7 @@ def exec_command(args):
         diff(args)
     elif args['working_mode'] == 'run':
         run(args)
-    elif args['working_mode'] == 'run-stage':
-        run_stage(args)
+    elif args['working_mode'] == 'stage':
+        stage(args)
     else:
         parser.print_help()
