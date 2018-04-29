@@ -87,24 +87,28 @@ def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
 
     for t, script in scripts.items():
 
-        p = subprocess.run(script, shell=True, env=child_environ, cwd=os.path.join(os.getcwd(), paths[t]),
+        if stage is not None:
+            logger.info("Running script of stage {} for target {}...".format(stage, t))
+        else:
+            logger.info("Running custom script for target {}...".format(t))
+
+
+        p = subprocess.Popen(script, shell=True, env=child_environ, cwd=os.path.join(os.getcwd(), paths[t]),
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        stdout = p.stdout.decode()
-        stderr = p.stderr.decode()
-
-        if stage is not None:
-            logger.info("Script of stage {} has been executed for target {}".format(stage, t))
-        else:
-            logger.info("Custom script has been executed for target {}".format(t))
-
+        # log the stdout as a stream in real-time (by lines)
         logger.info('')
         logger.info("Stdout:")
-        for line in stdout.split('\n'):
-            logger.info('>> {}'.format(line))
+        while True:
+            line = p.stdout.readline().decode().strip()
+            if line == '' and p.poll() is not None:
+                break
+            if line:
+                logger.info('>> {}'.format(line))
 
+        stderr = p.communicate()[1].decode().strip()
+        # log the stderr at the end (not in real-time)
         logger.info('')
-
         logger.info("Stderr:")
         for line in stderr.split('\n'):
             logger.info('>> {}'.format(line))

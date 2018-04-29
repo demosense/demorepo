@@ -27,12 +27,12 @@ class MockGitRepo:
 mock_dict = {}
 
 
-original_subprocess_run = subprocess.run
+original_subprocess_Popen = subprocess.Popen
 
 
-def mock_subprocess_run(*args, **kwargs):
-    mock_dict["mock_subprocess_run"] += 1
-    return original_subprocess_run(*args, **kwargs)
+def mock_subprocess_Popen(*args, **kwargs):
+    mock_dict["mock_subprocess_Popen"] += 1
+    return original_subprocess_Popen(*args, **kwargs)
 
 
 def mock_sys_exit(*args, **kwargs):

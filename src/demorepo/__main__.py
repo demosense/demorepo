@@ -18,6 +18,10 @@ def main():
                                      description='Tool to manage a monorepo, where projects can be general projects '
                                                  '(language code, build and test management...).')
 
+    # demorepo arguments to handle the logger options
+    parser.add_argument('--silent', action='store_true', help='Text is not printed to stdout')
+    parser.add_argument('--log-path', help='Text is written to a file path')
+
     subparsers = parser.add_subparsers(title='working mode', description='init, run or integration',
                                        help='working mode to group commands based on it.',
                                        dest='working_mode')
@@ -119,6 +123,13 @@ def main():
     #
 
     args = vars(parser.parse_args())
+
+    # set the logger configuration
+    if not args['silent']:
+        logger.add_console_handler()
+
+    if args['log_path']:
+        logger.add_file_handler(args['log_path'])
 
     if args['working_mode'] == 'init':
         commands.init(args)
