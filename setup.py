@@ -13,8 +13,13 @@ setup(name='demorepo',
       packages=find_packages('src', exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
       package_dir={'': 'src'},
       install_requires=[
-        'requests>=2.18,<2.19',
-        'GitPython>=2.1,<2.2',
-        'PyYAML>=3.12,<3.13'
-      ]
+          'requests>=2.18,<2.19',
+          'GitPython>=2.1,<2.2',
+          'PyYAML>=3.12,<3.13'
+      ],
+      entry_points={
+          'console_scripts': [
+              'demorepo = demorepo.__main__:main'
+          ]
+      }
       )

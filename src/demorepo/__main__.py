@@ -5,8 +5,7 @@ import demorepo.commands as commands
 __package__ = "demorepo"
 
 
-if __name__ == '__main__':
-
+def main():
     #
     # Commands
     #
@@ -135,3 +134,8 @@ if __name__ == '__main__':
         commands.integration(args)
     else:
         print(parser.parse_args('-h'))
+
+
+
+if __name__ == '__main__':
+    main()
