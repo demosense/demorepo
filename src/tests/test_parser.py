@@ -6,8 +6,8 @@ from demorepo import parser
 
 defaults = dict(silent=False, log_path=None, working_mode=None)
 lgc_defaults = dict(ci_tool='gitlab', ci_url=None)
-run_defaults = dict(targets=None, env=None, reverse_targets=False, stop_on_error=False)
-stage_defaults = dict(targets=None, env=None, reverse_targets=False, stop_on_error=False)
+run_defaults = dict(targets=None, env=None, reverse_targets=False, stop_on_error=False, inverse_dependencies=False)
+stage_defaults = dict(targets=None, env=None, reverse_targets=False, stop_on_error=False, inverse_dependencies=False)
 
 
 @pytest.mark.parametrize("argv,expected,exit", [
@@ -45,7 +45,7 @@ stage_defaults = dict(targets=None, env=None, reverse_targets=False, stop_on_err
     # run required
     (
         ['demorepo', 'run', 'ls'],
-        dict(defaults, working_mode='run', **run_defaults, command='ls'),
+        dict(defaults, working_mode='run', command='ls', **run_defaults),
         None,
     ),
     # run required fail
@@ -56,15 +56,16 @@ stage_defaults = dict(targets=None, env=None, reverse_targets=False, stop_on_err
     ),
     # run opts
     (
-        ['demorepo', 'run', 'ls', '--targets', 'target1', '--reverse-targets', '--stop-on-error', '--env', 'cosa=1234'],
+        ['demorepo', 'run', 'ls', '--targets', 'target1', '--reverse-targets',
+         '--stop-on-error', '--env', 'cosa=1234', '--inverse-dependencies'],
         dict(defaults, working_mode='run', command='ls', targets='target1',
-             reverse_targets=True, stop_on_error=True, env=['cosa=1234']),
+             reverse_targets=True, stop_on_error=True, env=['cosa=1234'], inverse_dependencies=True),
         None,
     ),
     # stage required
     (
         ['demorepo', 'stage', 'deploy'],
-        dict(defaults, working_mode='stage', **stage_defaults, stage='deploy'),
+        dict(defaults, working_mode='stage', stage='deploy', **stage_defaults),
         None,
     ),
     # stage required fail
@@ -75,9 +76,10 @@ stage_defaults = dict(targets=None, env=None, reverse_targets=False, stop_on_err
     ),
     # stage opts
     (
-        ['demorepo', 'stage', 'deploy', '--targets', 'target1', '--reverse-targets', '--stop-on-error', '--env', 'cosa=1234'],
-        dict(defaults, working_mode='stage', stage='deploy',
-             targets='target1', reverse_targets=True, stop_on_error=True, env=['cosa=1234']),
+        ['demorepo', 'stage', 'deploy', '--targets', 'target1', '--reverse-targets',
+         '--stop-on-error', '--env', 'cosa=1234', '--inverse-dependencies'],
+        dict(defaults, working_mode='stage', stage='deploy', targets='target1',
+             reverse_targets=True, stop_on_error=True, env=['cosa=1234'], inverse_dependencies=True),
         None,
     ),
 ])

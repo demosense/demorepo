@@ -171,6 +171,7 @@ def run(args):
     command = args['command']
     targets = args.get('targets', None)
     reverse_targets = args['reverse_targets']
+    inverse_dependencies = args['inverse_dependencies']
     stop_on_error = args['stop_on_error']
     env = args.get('env')
 
@@ -178,5 +179,6 @@ def run(args):
     dependencies = config.get_projects_dependencies()
     paths = config.get_projects_paths()
 
-    targets = get_targets(projects, dependencies, targets, reverse_targets)
+    targets = get_targets(projects, dependencies, targets, reverse_targets, inverse_dependencies)
     _run_targets(projects, paths, targets, env, stop_on_error, command=command)
+

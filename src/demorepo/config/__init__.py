@@ -82,7 +82,7 @@ def _init_config():
         _config['stages'] = stages
 
     else:
-        logger.error("Error: Unable to find config.yml. Is this a demorepo?")
+        logger.error("Error: Unable to find demorepo.yml. Is this a demorepo?")
         sys.exit(-1)
 
 
