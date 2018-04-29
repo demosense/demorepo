@@ -80,17 +80,6 @@ def test_run_global_all_p3_fails(setup):
     assert mock_dict['mock_sys_exit'] == 1
 
 
-def test_run_global_all_invalid(setup):
-
-    args = default_args.copy()
-    args["stage"] = "test-all-invalid"
-
-    mock_dict['mock_subprocess_Popen'] = 0
-    setup.setattr(subprocess, 'Popen', mock_subprocess_Popen)
-    with pytest.raises(Exception, match="Error: Unrecognized project p4 defined for stage test-all-invalid in global demorepo.yml"):
-        commands.stage(args)
-
-
 def test_run_all_local_p1(setup):
     # TODO: How can we really assert that this is really calling the local script?
     args = default_args.copy()

@@ -1,2 +1,3 @@
-deploy: 
-    script: ./deploy.sh $(cat requirements.txt)
+stages:
+    deploy: 
+        script: ./deploy.sh $(cat requirements.txt)

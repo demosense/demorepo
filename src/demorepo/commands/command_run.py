@@ -14,31 +14,19 @@ def _get_scripts(projects, paths, stage, targets):
     # Accumulator
     scripts = {}
 
-    # Load stages from global demorepo
-    # Parse global file
-    global_stages_path = os.path.join(os.getcwd(), 'demorepo.yml')
-    if os.path.exists(global_stages_path):
-        with open(global_stages_path) as f:
-            global_config = yaml.load(f.read())
+    # Get stages from global config
+    stages = config.get_stages()
 
-            # If the stage is defined in the global stage, capture the projects
-            if stage in global_config:
-                script = global_config[stage]['script']
-                included_projects = global_config[stage]['projects']
+    # If the stage is defined in the global stage, capture the projects
+    if stage in stages:
+        script = stages[stage]['script']
+        included_projects = stages[stage]['projects']
 
-                # Check if projects are defined
-                for p in [p for p in included_projects if p not in projects]:
-                    raise Exception(
-                        "Error: Unrecognized project {} defined for stage {} in global demorepo.yml".format(p, stage))
-
-                # Assign the script for each valid target
-                scripts = {
-                    p: script for p in included_projects if p in targets}
-
-            else:
-                logger.error("Stage {} not defined in global demorepo.yml".format(stage))
+        # Assign the script for each valid target
+        scripts = {
+            p: script for p in included_projects if p in targets}
     else:
-        logger.error("Global demorepo.yml not found")
+        logger.error("Stage {} not defined in global demorepo.yml".format(stage))
 
     # Load stages from local demorepo
     for t in targets:
@@ -50,8 +38,8 @@ def _get_scripts(projects, paths, stage, targets):
         with open(local_stages_path) as f:
             local_config = yaml.load(f.read())
 
-        if stage in local_config:
-            script = local_config[stage]['script']
+        if stage in local_config['stages']:
+            script = local_config['stages'][stages]['script']
             if t in scripts:
                 logger.info("Overriding with local stage for target {}".format(t))
 
