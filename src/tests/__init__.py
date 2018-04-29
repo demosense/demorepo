@@ -26,7 +26,6 @@ class MockGitRepo:
 
 mock_dict = {}
 
-
 original_subprocess_Popen = subprocess.Popen
 
 
@@ -41,9 +40,7 @@ def mock_sys_exit(*args, **kwargs):
 
 @pytest.fixture()
 def setup(monkeypatch):
-    actual_path = os.getcwd()
-    monkeypatch.setattr(
-        os, 'getcwd', lambda: os.path.join(actual_path, 'tests'))
+    monkeypatch.setattr(os, 'getcwd', lambda: os.path.dirname(__file__))
     yield monkeypatch
 
 
@@ -58,4 +55,5 @@ def raises(error):
                 yield
             except Exception as e:
                 raise e
+
         return not_raises()

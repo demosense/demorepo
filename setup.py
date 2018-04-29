@@ -21,5 +21,8 @@ setup(name='demorepo',
           'console_scripts': [
               'demorepo = demorepo.__main__:main'
           ]
-      }
+      },
+
+      setup_requires=['pytest-runner'],
+      tests_require=['pytest'],
       )
