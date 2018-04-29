@@ -73,19 +73,29 @@ def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
 
     child_environ = _get_child_environ(env)
 
+    # Print initial info
+    mode = "stage" if stage else "command"
+    param = command if command else stage
+    logger.info("Running {}: {}".format(mode, param), color=strformat.WHITE)
+    logger.info("Targets list is \n".format(mode, param), color=strformat.WHITE)
+    index = 0
+    for t in scripts.keys():
+        index += 1
+        logger.info("  {}. {}".format(index, t), color=strformat.YELLOW)
+
+    logger.info('')
+
     for t, script in scripts.items():
 
-        if stage is not None:
-            logger.info("Running script of stage {} for target {}...".format(stage, t))
-        else:
-            logger.info("Running custom script for target {}...".format(t))
+        logger.info(strformat.hline)
+        logger.info("Target: {}".format(t), color=strformat.YELLOW)
 
         p = subprocess.Popen(script, shell=True, env=child_environ, cwd=os.path.join(os.getcwd(), paths[t]),
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # log the stdout as a stream in real-time (by lines)
         logger.info('')
-        logger.info("Stdout:")
+        logger.info("Stdout:\n", color=strformat.CYAN)
         while True:
             line = p.stdout.readline().decode().strip()
             if line == '' and p.poll() is not None:
@@ -93,23 +103,35 @@ def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
             if line:
                 logger.info('>> {}'.format(line))
 
-        stderr = p.communicate()[1].decode().strip()
         # log the stderr at the end (not in real-time)
+        stderr = p.communicate()[1].decode().strip()
         logger.info('')
-        logger.info("Stderr:")
+        logger.info("Stderr:\n", color=strformat.CYAN)
         for line in stderr.split('\n'):
             logger.info('>> {}'.format(line))
 
         if p.returncode != 0:
-            errors.append(
-                {t: "Error executing the script of stage {}.".format(stage)})
+            errors.append(t)
 
         logger.info('')
-        logger.info(strformat.hline)
 
+    # Print summary
+    logger.info(strformat.hline)
+    logger.info("\nSummary:\n", color=strformat.WHITE)
+    index = 0
+    for t in scripts.keys():
+        index += 1
+        msg = "DONE" if t not in errors else "ERROR"
+        color = strformat.GREEN if msg == "DONE" else strformat.RED
+        logger.info("  {}. {} {}".format(index, t, msg), color=color)
+
+    logger.info("")
+    color = strformat.GREEN if len(errors) == 0 else strformat.RED
+    logger.info("----- {} scripts runned, {} successful, {} errors -----\n".format(len(scripts),
+                                                                                   len(scripts)-len(errors), len(errors)), color=color)
+
+    # Exit with error if needed
     if len(errors) > 0:
-        logger.error("Errors running scripts in this stage. Printing them as key: [list of errors]:")
-        logger.error(str(errors))
         sys.exit(-1)
 
 

@@ -11,8 +11,9 @@ logger.setLevel(logging.INFO)
 # Ensure that the logger has no handlers
 logger.handlers.clear()
 
-def info(text):
-    logger.info(strformat.format(text))
+
+def info(text, color=None):
+    logger.info(strformat.format(text, color=color))
 
 
 def error(text):
@@ -31,4 +32,3 @@ def add_file_handler(path):
     fh = logging.FileHandler(path)
     fh.setFormatter(logging.Formatter('%(message)s'))
     logger.addHandler(fh)
-

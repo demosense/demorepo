@@ -28,8 +28,6 @@ def get_targets(targets, dependencies, targets_filter, reverse_targets=False, re
     if (reverse_targets):
         targets.reverse()
 
-    logger.info("Target projects are: {}".format(targets))
-
     return targets
 
 
