@@ -10,11 +10,12 @@ default_args = {
     'stage': 'test',
     'targets': None,
     'reverse_targets': False,
+    'stop_on_error': True,
     'recursive_deps': False
 }
 
 
-def test_run_global_all(setup):
+def test_run_all(setup):
 
     args = default_args.copy()
     args["stage"] = "test-all"
@@ -26,7 +27,7 @@ def test_run_global_all(setup):
     assert mock_dict['mock_subprocess_Popen'] == 2
 
 
-def test_run_global_all_filter(setup):
+def test_run_all_filter(setup):
 
     args = default_args.copy()
     args["stage"] = "test-all"
@@ -39,7 +40,7 @@ def test_run_global_all_filter(setup):
     assert mock_dict['mock_subprocess_Popen'] == 1
 
 
-def test_run_global_all_filter_empty(setup):
+def test_run_all_filter_empty(setup):
 
     args = default_args.copy()
     args["stage"] = "test-all"
@@ -77,6 +78,22 @@ def test_run_global_all_p3_fails(setup):
     commands.stage(args)
 
     assert mock_dict['mock_subprocess_Popen'] == 3
+    assert mock_dict['mock_sys_exit'] == 1
+
+
+def test_run_all_p1_interrupts(setup):
+
+    args = default_args.copy()
+    args["stage"] = "test-all-p1-interrupts"
+
+    mock_dict['mock_subprocess_Popen'] = 0
+    mock_dict['mock_sys_exit'] = 0
+    setup.setattr(subprocess, 'Popen', mock_subprocess_Popen)
+    setup.setattr(sys, 'exit', mock_sys_exit)
+
+    commands.stage(args)
+
+    assert mock_dict['mock_subprocess_Popen'] == 1
     assert mock_dict['mock_sys_exit'] == 1
 
 
