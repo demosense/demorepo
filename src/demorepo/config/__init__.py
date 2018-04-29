@@ -2,6 +2,8 @@ import os
 import sys
 import yaml
 
+from demorepo import logger
+
 __all__ = ["get_config", "get_projects"]
 
 _config = {}
@@ -55,7 +57,7 @@ def _init_config():
         _config['projects'] = projects
 
     else:
-        print("Error: Unable to find config.yml. Is this a demorepo?")
+        logger.error("Error: Unable to find config.yml. Is this a demorepo?")
         sys.exit(-1)
 
 

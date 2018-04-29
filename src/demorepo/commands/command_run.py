@@ -4,6 +4,8 @@ import sys
 import yaml
 
 from demorepo import config
+from demorepo import logger
+from demorepo import strformat
 from .targets import get_targets
 
 
@@ -34,9 +36,9 @@ def _get_scripts(projects, paths, stage, targets):
                     p: script for p in included_projects if p in targets}
 
             else:
-                print("Stage {} not defined in global demorepo.yml".format(stage))
+                logger.error("Stage {} not defined in global demorepo.yml".format(stage))
     else:
-        print("Global demorepo.yml not found")
+        logger.error("Global demorepo.yml not found")
 
     # Load stages from local demorepo
     for t in targets:
@@ -51,7 +53,7 @@ def _get_scripts(projects, paths, stage, targets):
         if stage in local_config:
             script = local_config[stage]['script']
             if t in scripts:
-                print("Overriding with local stage for target {}".format(t))
+                logger.info("Overriding with local stage for target {}".format(t))
 
             scripts[t] = script
 
@@ -85,37 +87,42 @@ def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
 
     for t, script in scripts.items():
 
-        p = subprocess.run(script, shell=True, env=child_environ, cwd=os.path.join(os.getcwd(), paths[t]),
+        if stage is not None:
+            logger.info("Running script of stage {} for target {}...".format(stage, t))
+        else:
+            logger.info("Running custom script for target {}...".format(t))
+
+
+        p = subprocess.Popen(script, shell=True, env=child_environ, cwd=os.path.join(os.getcwd(), paths[t]),
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        stdout = p.stdout.decode()
-        stderr = p.stderr.decode()
+        # log the stdout as a stream in real-time (by lines)
+        logger.info('')
+        logger.info("Stdout:")
+        while True:
+            line = p.stdout.readline().decode().strip()
+            if line == '' and p.poll() is not None:
+                break
+            if line:
+                logger.info('>> {}'.format(line))
 
-        if stage is not None:
-            print("Script of stage {} has been executed.".format(stage))
-            print("Stdout:")
-            print("=" * 20)
-            print(stdout)
-            print("Stderr:")
-            print("=" * 20)
-            print(stderr)
-        else:
-            print("Custom script has been executed.")
-            print("Stdout:")
-            print("=" * 20)
-            print(stdout)
-            print("Stderr:")
-            print("=" * 20)
-            print(stderr)
+        stderr = p.communicate()[1].decode().strip()
+        # log the stderr at the end (not in real-time)
+        logger.info('')
+        logger.info("Stderr:")
+        for line in stderr.split('\n'):
+            logger.info('>> {}'.format(line))
 
         if p.returncode != 0:
             errors.append(
                 {t: "Error executing the script of stage {}.".format(stage)})
 
+        logger.info('')
+        logger.info(strformat.hline)
+
     if len(errors) > 0:
-        print(
-            "Errors running scripts in this stage. Printing them as key: [list of errors]:")
-        print(errors)
+        logger.error("Errors running scripts in this stage. Printing them as key: [list of errors]:")
+        logger.error(str(errors))
         sys.exit(-1)
 
 

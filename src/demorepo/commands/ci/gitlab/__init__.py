@@ -2,6 +2,8 @@ import os
 import git
 import requests
 
+from demorepo import logger
+
 
 __all__ = ['defaults', 'get_lgc']
 
@@ -43,12 +45,11 @@ def get_lgc(env_vars):
         last_green_commit = repo.merge_base(
             parent_branch, env_vars['CI_COMMIT_SHA'])[0].hexsha
 
-        # print("Using as last green commit the last commit in common between parent branch {} ".format(parent_branch)
-        #             "and HEAD: {}".format(last_green_commit))
+        logger.info("Using as last green commit the last commit in common between "
+                    "parent branch {} and HEAD: {}".format(parent_branch, last_green_commit))
     else:
         last_green_commit = response[0]["sha"].strip()
 
-    # print(
-    #     "sha of last green commit in the branch {} is {}".format(git_branch, last_green_commit))
+    logger.info("sha of last green commit in the branch {} is {}".format(git_branch, last_green_commit))
 
     return last_green_commit
