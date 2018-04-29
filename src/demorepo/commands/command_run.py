@@ -131,11 +131,12 @@ def run(args):
     command = args['command']
     targets = args.get('targets', None)
     reverse_targets = args['reverse_targets']
+    reverse_dependency = args['reverse_dependency']
     env = args.get('env')
 
     projects = config.get_projects()
     dependencies = config.get_projects_dependencies()
     paths = config.get_projects_paths()
 
-    targets = get_targets(projects, dependencies, targets, reverse_targets)
+    targets = get_targets(projects, dependencies, targets, reverse_targets, reverse_dependency)
     _run_targets(projects, paths, targets, env, command=command)

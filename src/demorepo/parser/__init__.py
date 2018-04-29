@@ -43,9 +43,9 @@ parser_stage.add_argument(
 parser_stage.add_argument('-e', '--env', action='append', help='Optional variables passed to the target stage script.'
                           ' The format is VAR_NAME=VAR_VALUE. '
                           'Multiple env vars can be specified.')
-# parser_stage.add_argument('-r', '--recursive-deps', action='store_true',
-#                               help='Find projects recursively which depends on target projects and include them as '
-#                               'target projects too.')
+parser_stage.add_argument('-r', '--inverse-dependencies', action='store_true',
+                          help='Find projects which depends on target projects and include them as '
+                               'target projects too.')
 parser_stage.add_argument('-t', '--targets', help='A list of target project names to run the provided stage, '
                           'separated by blank spaces (use quotes around the string).')
 parser_stage.add_argument('--reverse-targets', action='store_true',
@@ -63,9 +63,9 @@ parser_run.add_argument('-e', '--env', action='append',
                         help='Optional variables passed to the target stage script.'
                         ' The format is VAR_NAME=VAR_VALUE. '
                         'Multiple env vars can be specified.')
-# parser_run.add_argument('-r', '--recursive-deps', action='store_true',
-#                               help='Find projects recursively which depends on target projects and include them as '
-#                                    'target projects too.')
+parser_run.add_argument('-r', '--inverse-dependencies', action='store_true',
+                        help='Find projects which depends on target projects and include them as '
+                             'target projects too.')
 parser_run.add_argument('--reverse-targets', action='store_true',
                         help='Reverse the dependency order for projects')
 
