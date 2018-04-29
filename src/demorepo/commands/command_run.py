@@ -62,7 +62,7 @@ def _get_child_environ(env):
     return child_environ
 
 
-def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
+def _run_targets(projects, paths, targets, env, stop_on_error, *, stage=None, command=None):
     errors = []
 
     # Get scripts from stage scripts or paste the command
@@ -73,19 +73,31 @@ def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
 
     child_environ = _get_child_environ(env)
 
+    # Print initial info
+    mode = "stage" if stage else "command"
+    param = command if command else stage
+    logger.info("Running {}: {}".format(mode, param), color=strformat.WHITE)
+    logger.info("Targets list is \n".format(mode, param), color=strformat.WHITE)
+    index = 0
+    for t in scripts.keys():
+        index += 1
+        logger.info("  {}. {}".format(index, t), color=strformat.YELLOW)
+
+    logger.info('')
+
+    # Interrupted captures the index in which the execution is interrupted
+    interrupted = -1
     for t, script in scripts.items():
 
-        if stage is not None:
-            logger.info("Running script of stage {} for target {}...".format(stage, t))
-        else:
-            logger.info("Running custom script for target {}...".format(t))
+        logger.info(strformat.hline)
+        logger.info("Target: {}".format(t), color=strformat.YELLOW)
 
         p = subprocess.Popen(script, shell=True, env=child_environ, cwd=os.path.join(os.getcwd(), paths[t]),
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # log the stdout as a stream in real-time (by lines)
         logger.info('')
-        logger.info("Stdout:")
+        logger.info("Stdout:\n", color=strformat.CYAN)
         while True:
             line = p.stdout.readline().decode().strip()
             if line == '' and p.poll() is not None:
@@ -93,23 +105,50 @@ def _run_targets(projects, paths, targets, env, *, stage=None, command=None):
             if line:
                 logger.info('>> {}'.format(line))
 
-        stderr = p.communicate()[1].decode().strip()
         # log the stderr at the end (not in real-time)
+        stderr = p.communicate()[1].decode().strip()
         logger.info('')
-        logger.info("Stderr:")
+        logger.info("Stderr:\n", color=strformat.CYAN)
         for line in stderr.split('\n'):
             logger.info('>> {}'.format(line))
 
         if p.returncode != 0:
-            errors.append(
-                {t: "Error executing the script of stage {}.".format(stage)})
+            errors.append(t)
+            # Capture the index of the target
+            if stop_on_error:
+                interrupted = list(scripts.keys()).index(t)
+                break
 
         logger.info('')
-        logger.info(strformat.hline)
 
+    # Print summary
+    logger.info(strformat.hline)
+    logger.info("\nSummary:\n", color=strformat.WHITE)
+    index = 0
+    for t in scripts.keys():
+        index += 1
+
+        # Color depending on the error
+        msg = "DONE" if t not in errors else "ERROR"
+        color = strformat.GREEN if msg == "DONE" else strformat.RED
+
+        # Color has a third option if interrupted
+        if interrupted != -1 and index > interrupted+1:
+            msg = "SKIPPED"
+            color = strformat.YELLOW
+
+        logger.info("  {}. {} {}".format(index, t, msg), color=color)
+
+    logger.info("")
+    if interrupted == -1:
+        color = strformat.GREEN if len(errors) == 0 else strformat.RED
+        logger.info("----- {} scripts runned, {} successful, {} errors -----\n".format(len(scripts),
+                                                                                       len(scripts)-len(errors), len(errors)), color=color)
+    else:
+        logger.info("----- Interrupted by failed {} -----\n".format(mode), color=strformat.YELLOW)
+
+# Exit with error if needed
     if len(errors) > 0:
-        logger.error("Errors running scripts in this stage. Printing them as key: [list of errors]:")
-        logger.error(str(errors))
         sys.exit(-1)
 
 
@@ -118,25 +157,28 @@ def stage(args):
     targets = args.get('targets', None)
     reverse_targets = args['reverse_targets']
     env = args.get('env')
+    stop_on_error = args['stop_on_error']
 
     projects = config.get_projects()
     dependencies = config.get_projects_dependencies()
     paths = config.get_projects_paths()
 
-    targets = get_targets(projects, dependencies, targets, reverse_targets)
-    _run_targets(projects, paths, targets, env, stage=stage)
+    targets = get_targets(projects, dependencies, targets, reverse_targets, stop_on_error)
+    _run_targets(projects, paths, targets, env, stop_on_error, stage=stage)
 
 
 def run(args):
     command = args['command']
     targets = args.get('targets', None)
     reverse_targets = args['reverse_targets']
-    reverse_dependency = args['reverse_dependency']
+    inverse_dependencies = args['inverse_dependencies']
+    stop_on_error = args['stop_on_error']
     env = args.get('env')
 
     projects = config.get_projects()
     dependencies = config.get_projects_dependencies()
     paths = config.get_projects_paths()
 
-    targets = get_targets(projects, dependencies, targets, reverse_targets, reverse_dependency)
-    _run_targets(projects, paths, targets, env, command=command)
+    targets = get_targets(projects, dependencies, targets, reverse_targets, inverse_dependencies)
+    _run_targets(projects, paths, targets, env, stop_on_error, command=command)
+

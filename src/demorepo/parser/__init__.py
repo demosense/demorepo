@@ -50,6 +50,8 @@ parser_stage.add_argument('-t', '--targets', help='A list of target project name
                           'separated by blank spaces (use quotes around the string).')
 parser_stage.add_argument('--reverse-targets', action='store_true',
                           help='Reverse the dependency order for projects')
+parser_stage.add_argument('--stop-on-error', action='store_true',
+                          help='Stops the execution if the stage fails for a project')
 
 #
 # demorepo run
@@ -68,6 +70,8 @@ parser_run.add_argument('-r', '--inverse-dependencies', action='store_true',
                              'target projects too.')
 parser_run.add_argument('--reverse-targets', action='store_true',
                         help='Reverse the dependency order for projects')
+parser_run.add_argument('--stop-on-error', action='store_true',
+                        help='Stops the execution if the command fails for a project')
 
 #
 # End commands

@@ -59,7 +59,7 @@ python3 -m demorepo [command] [options]
 ### run
 
 ```
-demorepo run [-h] [-t TARGETS] [-e ENV] [--reverse-targets] command
+demorepo run [-h] [-t TARGETS] [-e ENV] [--reverse-targets] [--stop-on-error] command
 ```
 
 Execute a shell command for all projects.
@@ -78,12 +78,13 @@ optional arguments:
                         The format is VAR_NAME=VAR_VALUE. Multiple env vars
                         can be specified.
   --reverse-targets     Reverse the dependency order for projects
+  --stop-on-error       Stops the execution if the command fails for a project
 ```
 
 ### run-stage
 
 ```
-demorepo stage [-h] [-e ENV] [-t TARGETS] [--reverse-targets] stage
+demorepo stage [-h] [-e ENV] [-t TARGETS] [--reverse-targets] [--stop-on-error] stage
 ```
 
 Run the specified stage in the global and local config files.
@@ -102,6 +103,7 @@ optional arguments:
                         stage, separated by blank spaces (use quotes around
                         the string).
   --reverse-targets     Reverse the dependency order for projects
+  --stop-on-error       Stops the execution if the stage fails for a project
 ```
 
 ### diff

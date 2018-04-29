@@ -6,8 +6,8 @@ from demorepo import parser
 
 defaults = dict(silent=False, log_path=None, working_mode=None)
 lgc_defaults = dict(ci_tool='gitlab', ci_url=None)
-run_defaults = dict(targets=None, env=None, reverse_targets=False, inverse_dependencies=False)
-stage_defaults = dict(targets=None, env=None, reverse_targets=False, inverse_dependencies=False)
+run_defaults = dict(targets=None, env=None, reverse_targets=False, stop_on_error=False, inverse_dependencies=False)
+stage_defaults = dict(targets=None, env=None, reverse_targets=False, stop_on_error=False, inverse_dependencies=False)
 
 
 @pytest.mark.parametrize("argv,expected,exit", [
@@ -57,9 +57,9 @@ stage_defaults = dict(targets=None, env=None, reverse_targets=False, inverse_dep
     # run opts
     (
         ['demorepo', 'run', 'ls', '--targets', 'target1', '--reverse-targets',
-         '--env', 'cosa=1234', '--inverse-dependencies'],
+         '--stop-on-error', '--env', 'cosa=1234', '--inverse-dependencies'],
         dict(defaults, working_mode='run', command='ls', targets='target1',
-             reverse_targets=True, env=['cosa=1234'], inverse_dependencies=True),
+             reverse_targets=True, stop_on_error=True, env=['cosa=1234'], inverse_dependencies=True),
         None,
     ),
     # stage required
@@ -77,9 +77,9 @@ stage_defaults = dict(targets=None, env=None, reverse_targets=False, inverse_dep
     # stage opts
     (
         ['demorepo', 'stage', 'deploy', '--targets', 'target1', '--reverse-targets',
-         '--env', 'cosa=1234', '--inverse-dependencies'],
+         '--stop-on-error', '--env', 'cosa=1234', '--inverse-dependencies'],
         dict(defaults, working_mode='stage', stage='deploy', targets='target1',
-             reverse_targets=True, env=['cosa=1234'], inverse_dependencies=True),
+             reverse_targets=True, stop_on_error=True, env=['cosa=1234'], inverse_dependencies=True),
         None,
     ),
 ])

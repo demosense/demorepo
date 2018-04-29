@@ -19,19 +19,26 @@ projects:
             - p2
 
 stages:
-  test-p2:
-    script: ./test.sh
-    projects:
-      - p2
-
   test-all:
     script: ./test.sh
     projects:
       - p1
       - p2
 
+  test-p2:
+    script: ./test.sh
+    projects:
+      - p2
+
   test-all-p3-fails:
     script: ./test.sh
+    projects:
+      - p1
+      - p2
+      - p3
+
+  test-all-p1-interrupts:
+    script: ./fail.sh
     projects:
       - p1
       - p2
