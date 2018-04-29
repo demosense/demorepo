@@ -30,15 +30,9 @@ stage_defaults = dict(targets=None, env=None, reverse_targets=False)
         dict(defaults, working_mode='lgc', **lgc_defaults),
         None,
     ),
-    # diff required A
+    # diff required
     (
-        ['demorepo', 'diff', '-s', 'HEAD'],
-        dict(defaults, working_mode='diff', sha='HEAD'),
-        None,
-    ),
-    # diff required B
-    (
-        ['demorepo', 'diff', '--sha', 'HEAD'],
+        ['demorepo', 'diff', 'HEAD'],
         dict(defaults, working_mode='diff', sha='HEAD'),
         None,
     ),
@@ -48,15 +42,9 @@ stage_defaults = dict(targets=None, env=None, reverse_targets=False)
         dict(defaults, working_mode='diff'),
         SystemExit,
     ),
-    # run required A
+    # run required
     (
-        ['demorepo', 'run', '-c', 'ls'],
-        dict(defaults, working_mode='run', **run_defaults, command='ls'),
-        None,
-    ),
-    # run required B
-    (
-        ['demorepo', 'run', '--command', 'ls'],
+        ['demorepo', 'run', 'ls'],
         dict(defaults, working_mode='run', **run_defaults, command='ls'),
         None,
     ),
@@ -68,19 +56,13 @@ stage_defaults = dict(targets=None, env=None, reverse_targets=False)
     ),
     # run opts
     (
-        ['demorepo', 'run', '--command', 'ls', '--targets', 'target1', '--reverse-targets', '--env', 'cosa=1234'],
+        ['demorepo', 'run', 'ls', '--targets', 'target1', '--reverse-targets', '--env', 'cosa=1234'],
         dict(defaults, working_mode='run', command='ls', targets='target1', reverse_targets=True, env=['cosa=1234']),
         None,
     ),
-    # stage required A
+    # stage required
     (
-        ['demorepo', 'stage', '-s', 'deploy'],
-        dict(defaults, working_mode='stage', **stage_defaults, stage='deploy'),
-        None,
-    ),
-    # stage required B
-    (
-        ['demorepo', 'stage', '--stage', 'deploy'],
+        ['demorepo', 'stage', 'deploy'],
         dict(defaults, working_mode='stage', **stage_defaults, stage='deploy'),
         None,
     ),
@@ -92,7 +74,7 @@ stage_defaults = dict(targets=None, env=None, reverse_targets=False)
     ),
     # stage opts
     (
-        ['demorepo', 'stage', '--stage', 'deploy', '--targets', 'target1', '--reverse-targets', '--env', 'cosa=1234'],
+        ['demorepo', 'stage', 'deploy', '--targets', 'target1', '--reverse-targets', '--env', 'cosa=1234'],
         dict(defaults, working_mode='stage', stage='deploy',
              targets='target1', reverse_targets=True, env=['cosa=1234']),
         None,
