@@ -4,7 +4,7 @@ import yaml
 
 from demorepo import logger
 
-__all__ = ["get_config", "get_projects"]
+__all__ = ["get_config", "get_projects", "get_projects_paths", "get_projects_dependencies", "get_stages"]
 
 _config = {}
 
@@ -30,18 +30,21 @@ def get_projects_paths():
     return paths
 
 
+def get_stages():
+    return get_config()["stages"]
+
+
 def _init_config():
 
     # Load global config file
-    config_path = os.path.join(os.getcwd(), "config.yml")
-
-    # apply the order to the targets list, just if config.yml exists in root path
+    config_path = os.path.join(os.getcwd(), "demorepo.yml")
     if os.path.exists(config_path):
         with open(config_path) as f:
             config = yaml.load(f.read())
 
-        # Get and check projects
-        projects = config.get("projects", [])
+        # PROJECTS:
+        #
+        projects = config.get("projects", {})
         # Check Schema:
         for p in projects.keys():
             # Path is required
@@ -52,9 +55,31 @@ def _init_config():
             # Defaults
             projects[p]["depends"] = projects[p].get("depends", [])
 
-        # TODO: Check that projects are directories
+        # TODO: Check that projects exists as directories
 
         _config['projects'] = projects
+
+        # STAGES:
+        #
+        stages = config.get("stages", {})
+        # Check Schema:
+        for s in stages.keys():
+            # Script is required
+            if "script" not in stages[s]:
+                raise Exception(
+                    "Error: Invalid stage {} in config.yml. Script is required.".format(s))
+            # Projects is required
+            if "projects" not in stages[s]:
+                raise Exception(
+                    "Error: Invalid stage {} in config.yml. Projects is required.".format(s))
+
+            included_project = stages[s]['projects']
+            # Check if projects are defined
+            for p in [p for p in included_project if p not in projects.keys()]:
+                raise Exception(
+                    "Error: Unrecognized project {} defined for stage {} in global demorepo.yml".format(p, s))
+
+        _config['stages'] = stages
 
     else:
         logger.error("Error: Unable to find config.yml. Is this a demorepo?")

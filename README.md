@@ -12,11 +12,11 @@ pip3 install git+https://github.com/demosense/demorepo.git
 
 ## Configuration
 
-Demorepo uses two configuration files that must be provided:
+Demorepo requires a configuration file:
 
-* `config.yml`
+* `demorepo.yml`
 
-This file configures the tracked projects, their dependencies and ci tools. The following YAML schema provides an example:
+This file configures the tracked projects, their dependencies, ci tools and predefined stages. The following YAML schema provides an example:
 
 ```yaml
 demorepo: 1.0
@@ -28,23 +28,17 @@ projects:
         path: /path/to/project-b
         depends:
             - project-a-name
-```
+stages:
+    stage-a:
+        script: command
+        projects:
+            - project-a
 
-* `demorepo.yml`
-
-Specifies stages to be executed for the projects. You can define a particular stage, with an script and the projects that would be applied. The following YAML schema provides an example:
-
-```yaml
-stage-a:
-    script: command
-    projects:
-        - project-a
-
-stage-b:
-    script: command
-    projects:
-        - project-a
-        - project-b
+    stage-b:
+        script: command
+        projects:
+            - project-a
+            - project-b
 ```
 
 ## Usage
@@ -58,28 +52,24 @@ python3 -m demorepo [command] [options]
 ### Available Commands
 
 * `run`: Runs a particular command for selected stages.
-* `run-stage`: Used to run scripts related to stages in `demorepo.yml`.
+* `stage`: Used to run scripts related to stages in `demorepo.yml`.
 * `diff`: Returns a list of targets that have changed for a particular commit SHA.
 * `lgc`: Stands for _last green commit_, returns the last comment to report a completed integration step for the configured CI tool.
-
-**To be implemented**
-
-* `init`
-* `info`
-* `integration`
 
 ### run
 
 ```
-python3 -m demorepo run {options}
+demorepo run [-h] [-t TARGETS] [-e ENV] [--reverse-targets] command
 ```
 
 Execute a shell command for all projects.
 
 ```
+positional arguments:
+  command               The shell command to execute.
+
+optional arguments:
   -h, --help            show this help message and exit
-  -c COMMAND, --command COMMAND
-                        The shell command to execute.
   -t TARGETS, --targets TARGETS
                         A list of target project names to run the provided
                         stage, separated by blank spaces (use quotes around
@@ -93,16 +83,17 @@ Execute a shell command for all projects.
 ### run-stage
 
 ```
-python3 -m demorepo run-stage {options}
+demorepo stage [-h] [-e ENV] [-t TARGETS] [--reverse-targets] stage
 ```
 
 Run the specified stage in the global and local config files.
 
 ```
+positional arguments:
+  stage                 Stage name in the project demorepo.yml
+
 optional arguments:
   -h, --help            show this help message and exit
-  -s STAGE, --stage STAGE
-                        Stage name in the project demorepo.yml
   -e ENV, --env ENV     Optional variables passed to the target stage script.
                         The format is VAR_NAME=VAR_VALUE. Multiple env vars
                         can be specified.
@@ -115,21 +106,29 @@ optional arguments:
 
 ### diff
 
+```
+demorepo diff [-h] sha
+```
+
 Return the projects that have changed according to the provided sha
 
 ```
+positional arguments:
+  sha         SHA of the commit to compare with
+
 optional arguments:
-  -h, --help         show this help message and exit
-  -s SHA, --sha SHA  SHA of the commit to compare with
+  -h, --help  show this help message and exit
 ```
 
 ### lgc
 
+```
+demorepo lgc [-h] [--ci-tool {gitlab}] [--ci-url CI_URL]
+```
+
 Return the last green commit according to the configured ci tool in the config
 
 ```
-file or by option --ci-tool
-
 optional arguments:
   -h, --help          show this help message and exit
   --ci-tool {gitlab}  The specific CI tool (e.g.: gitlab, Circle-CI, ....)
