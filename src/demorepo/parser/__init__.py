@@ -32,14 +32,14 @@ parser_lgc.add_argument(
 parser_diff = subparsers.add_parser('diff',
                                     description='Return the projects that have changed according to the provided sha')
 parser_diff.add_argument(
-    '-s', '--sha', required=True, help='SHA of the commit to compare with')
+    'sha', action='store', help='SHA of the commit to compare with')
 
 #
 # demorepo stage
 parser_stage = subparsers.add_parser('stage',
                                      description='Run the specified stage in the global and local config files.')
 parser_stage.add_argument(
-    '-s', '--stage', required=True, help='Stage name in the project demorepo.yml')
+    'stage', action='store', help='Stage name in the project demorepo.yml')
 parser_stage.add_argument('-e', '--env', action='append', help='Optional variables passed to the target stage script.'
                           ' The format is VAR_NAME=VAR_VALUE. '
                           'Multiple env vars can be specified.')
@@ -55,7 +55,7 @@ parser_stage.add_argument('--reverse-targets', action='store_true',
 # demorepo run
 parser_run = subparsers.add_parser('run',
                                    description='Execute a shell command for all projects.')
-parser_run.add_argument('-c', '--command', required=True,
+parser_run.add_argument('command', action='store',
                         help='The shell command to execute.')
 parser_run.add_argument('-t', '--targets', help='A list of target project names to run the provided stage, '
                         'separated by blank spaces (use quotes around the string).')
