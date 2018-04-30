@@ -68,6 +68,7 @@ def _run_targets(projects, paths, targets, env, stop_on_error, *, stage=None, co
     # Get scripts from stage scripts or paste the command
     if stage:
         scripts = _get_scripts(projects, paths, stage, targets)
+        targets = [t for t in targets if t in scripts.keys()]
     else:
         scripts = {t: command for t in targets}
 
@@ -79,7 +80,7 @@ def _run_targets(projects, paths, targets, env, stop_on_error, *, stage=None, co
     logger.info("Running {}: {}".format(mode, param), color=strformat.WHITE)
     logger.info("Targets list is \n".format(mode, param), color=strformat.WHITE)
     index = 0
-    for t in scripts.keys():
+    for t in targets:
         index += 1
         logger.info("  {}. {}".format(index, t), color=strformat.YELLOW)
 
@@ -87,7 +88,9 @@ def _run_targets(projects, paths, targets, env, stop_on_error, *, stage=None, co
 
     # Interrupted captures the index in which the execution is interrupted
     interrupted = -1
-    for t, script in scripts.items():
+    for t in targets:
+
+        script = scripts[t]
 
         logger.info(strformat.hline)
         logger.info("Target: {}".format(t), color=strformat.YELLOW)
@@ -125,7 +128,7 @@ def _run_targets(projects, paths, targets, env, stop_on_error, *, stage=None, co
     logger.info(strformat.hline)
     logger.info("\nSummary:\n", color=strformat.WHITE)
     index = 0
-    for t in scripts.keys():
+    for t in targets:
         index += 1
 
         # Color depending on the error
@@ -156,6 +159,7 @@ def stage(args):
     stage = args['stage']
     targets = args.get('targets', None)
     reverse_targets = args['reverse_targets']
+    inverse_dependencies = args['inverse_dependencies']
     env = args.get('env')
     stop_on_error = args['stop_on_error']
 
@@ -163,7 +167,7 @@ def stage(args):
     dependencies = config.get_projects_dependencies()
     paths = config.get_projects_paths()
 
-    targets = get_targets(projects, dependencies, targets, reverse_targets, stop_on_error)
+    targets = get_targets(projects, dependencies, targets, reverse_targets, inverse_dependencies)
     _run_targets(projects, paths, targets, env, stop_on_error, stage=stage)
 
 
@@ -181,4 +185,3 @@ def run(args):
 
     targets = get_targets(projects, dependencies, targets, reverse_targets, inverse_dependencies)
     _run_targets(projects, paths, targets, env, stop_on_error, command=command)
-

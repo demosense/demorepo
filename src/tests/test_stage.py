@@ -11,7 +11,7 @@ default_args = {
     'targets': None,
     'reverse_targets': False,
     'stop_on_error': True,
-    'recursive_deps': False
+    'inverse_dependencies': False
 }
 
 
