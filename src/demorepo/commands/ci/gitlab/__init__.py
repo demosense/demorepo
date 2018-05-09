@@ -1,6 +1,8 @@
 import os
 import git
 import requests
+import json
+import sys
 
 from demorepo import logger
 
@@ -48,7 +50,11 @@ def get_lgc(env_vars):
         logger.info("Using as last green commit the last commit in common between "
                     "parent branch {} and HEAD: {}".format(parent_branch, last_green_commit))
     else:
-        last_green_commit = response[0]["sha"].strip()
+        try:
+            last_green_commit = response[0]["sha"].strip()
+        except Exception as e:
+            logger.error("ERROR {}: trying to get the lgc sha: {}".format(e, json.dumps(response)))
+            sys.exit(-1)
 
     logger.info("sha of last green commit in the branch {} is {}".format(git_branch, last_green_commit))
 
